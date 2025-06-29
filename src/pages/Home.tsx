@@ -49,6 +49,7 @@ const Home = () => {
                     Recent projects
                 </Typography>
                 {projectData && <ProjectCard projects={projectData} onDelete={deleteProject} />}
+                {projectData?.length == 0 && <Typography>No project is created yet.</Typography>}
             </Box>
         </Layout>
     );

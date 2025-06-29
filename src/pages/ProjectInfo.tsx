@@ -2,7 +2,6 @@ import { Box, Typography, Button } from '@mui/material';
 import Layout from '../layouts/Layout';
 import ModelList from "../components/wizard/ModelList"
 import { Link } from 'react-router';
-import DatasetList from '../components/dataset/datasetList';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { fetchProjectDetailsService } from '../services/projectService';
@@ -23,7 +22,7 @@ const ProjectInfo = () => {
             const data = await fetchProjectDetailsService(id);
             if (data) {
                 setProjectDetails(data);
-                setProject(data);
+                setProject(data.projectDetails);
                 console.log("Project info", data)
             }
 
@@ -58,8 +57,6 @@ const ProjectInfo = () => {
                     </Link>
                 </Box>
                 <ModelList projectId={id} models={projectDetails.modelsRealtedToThisProject} />
-                <Typography variant="h6">Dataset</Typography>
-                <DatasetList />
             </>}
 
         </Layout>

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {
     Box, Button, List, ListItem, ListItemAvatar,
-    ListItemText, Grid, Divider,
+    ListItemText, Grid, 
     Typography
 } from '@mui/material';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
@@ -60,7 +60,7 @@ export default function ModelList({ projectId, models: initialModels }: ModelLis
                                     secondary={`${model.mlModelName} - ${new Date(model.createdAt).toLocaleDateString()}`}
                                 />
                             </ListItem>
-                            <Divider />
+                            {/* <Divider /> */}
                         </React.Fragment>
                     ))}
 

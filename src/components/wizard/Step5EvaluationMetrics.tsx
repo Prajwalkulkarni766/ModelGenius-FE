@@ -14,7 +14,6 @@ const Step5EvaluationMetrics = ({ goToNextStep }: ModelStepProps) => {
     return (
         <>
             {/* Step: 5 */}
-            {/* TODO: work on step five give performance metrices */}
             <Box mt={5} sx={{ display: "flex", flexDirection: 'column' }} gap={2}>
                 <Typography variant="h5">Evaluation Metrics Overview</Typography>
                 <Box mt={2} sx={{

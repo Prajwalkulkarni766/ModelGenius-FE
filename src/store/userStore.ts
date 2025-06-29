@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 interface UserState {
-  user: { _id: string; email: string } | null;
+  user: { _id: string; email: string, username: string } | null;
   setUser: (user: { _id: string; email: string } | null) => void;
 }
 

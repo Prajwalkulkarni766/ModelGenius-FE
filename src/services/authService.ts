@@ -32,13 +32,22 @@ const loginService = async (email: string, password: string) => {
   }
 };
 
-const logout = () => {
-  localStorage.removeItem('token');
-  return true;
+const logoutService = async () => {
+  try {
+    const response = await api.post('/v1/users/logout');
+
+    if (response.status === 200) {
+      return { requestStatus: true, responseData: null };
+    } else {
+      return { requestStatus: false, responseData: null };
+    }
+  } catch (error) {
+    throw new Error('Login failed. Please check your credentials or try again later.');
+  }
 };
 
 export {
   loginService,
   signupService,
-  logout,
+  logoutService,
 };

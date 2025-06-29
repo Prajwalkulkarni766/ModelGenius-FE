@@ -1,4 +1,4 @@
-import { Box, Typography, Avatar, List } from '@mui/material';
+import { Box, Typography, Avatar, List, Button } from '@mui/material';
 import {
   Home as HomeIcon,
   Description as DescriptionIcon,
@@ -7,7 +7,11 @@ import {
 } from '@mui/icons-material';
 import SideBarMenuItem from '../../components/dashboard/SideBarMenuItem';
 import { MenuItem } from '../../types/Menu';
-import { Link } from 'react-router';
+import { useNavigate } from 'react-router-dom';
+import { userStore } from "../../store/userStore";
+import { projectStore } from "../../store/projectStore";
+import { modelStore } from "../../store/modelStore";
+import { logoutService } from '../../services/authService';
 
 const menus: MenuItem[] = [
   { icon: <HomeIcon />, text: 'Home', ref: '/home' },
@@ -17,6 +21,28 @@ const menus: MenuItem[] = [
 ];
 
 const Sidebar = () => {
+
+  const { user, setUser } = userStore();
+  const { setProject } = projectStore();
+  const { setModel } = modelStore();
+  const navigate = useNavigate();
+
+  const logout = async () => {
+    try {
+      const response = await logoutService();
+
+      if (response.requestStatus) {
+        setUser(null);
+        setProject(null);
+        setModel(null);
+        localStorage.removeItem("token");
+        navigate('/');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   return (
     <Box
       width="240px"
@@ -28,7 +54,7 @@ const Sidebar = () => {
       <Box display="flex" alignItems="center" mb={3} gap={1}>
         <Avatar sx={{ bgcolor: 'primary.main' }}>H</Avatar>
         <Typography variant="subtitle1" fontWeight={500}>
-          User Name
+          {user && user.username}
         </Typography>
       </Box>
 
@@ -40,7 +66,7 @@ const Sidebar = () => {
       </List>
 
       <Box mt="auto">
-        <Link to="/" style={{ color: 'inherit', textDecoration: "none" }}>
+        <Button onClick={logout} style={{ color: 'inherit', textDecoration: "none" }}>
           <Typography
             ml={2}
             sx={{
@@ -50,7 +76,7 @@ const Sidebar = () => {
           >
             Logout
           </Typography>
-        </Link>
+        </Button>
       </Box>
     </Box>
   );

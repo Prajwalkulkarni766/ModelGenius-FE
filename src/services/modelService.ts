@@ -86,7 +86,7 @@ const deleteModelService = async (projectId: string, modelId: string) => {
     const response = await api.delete(`/v1/models/${projectId}/models/${modelId}`);
 
     console.log(response)
-    
+
     if (response.status === 204) {
       return { requestStatus: true, responseData: response.data.data };
     }

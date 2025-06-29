@@ -26,6 +26,7 @@ const LoginForm = () => {
             // Assuming loginService handles the API call for login.
             const { requestStatus, responseData } = await loginService(data.email, data.password);
             if (requestStatus) {
+                console.log(responseData.user)
                 setUser(responseData.user)
                 navigate("/home"); // Navigate to home on successful login
             } else {
