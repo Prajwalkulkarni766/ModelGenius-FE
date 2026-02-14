@@ -1,0 +1,128 @@
+// src/pages/ModelDetails.tsx
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import ModelDetailsView from "../components/model/Detail";
+import RetrainTab from '../components/model/RetrainTab';
+import { getModelService, deleteModelService, trainModelService } from "../services/modelService";
+import CodeDisplay from '../components/model/CodeDisplay';
+import Layout from '../layouts/Layout';
+import ModelTabs from '../components/model/ModelTabs';
+import AIAgent from '../components/model/AIAgent';
+import ExportModel from '../components/model/ExportModel';
+import Dataset from '../components/model/Dataset';
+import { Typography } from '@mui/material';
+
+const ModelDetails = () => {
+  const { projectId, modelId } = useParams<{ projectId: string; modelId: string }>();
+  const navigate = useNavigate();
+
+  const [model, setModel] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [trainLoading, setTrainLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchModel = async () => {
+    if (!projectId || !modelId) return;
+    try {
+      const res = await getModelService(projectId, modelId);
+      if (res?.data) {
+        setModel(res.data);
+      }
+    } catch (err) {
+      setError("Failed to load model details");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchModel();
+  }, [projectId, modelId]);
+
+  const handleTrain = async () => {
+    setTrainLoading(true);
+    try {
+      if (projectId && modelId) {
+        const res = await trainModelService(projectId, modelId);
+        if (res?.data) {
+          setModel({ ...model, metrics: res.data });
+        }
+      }
+    } catch (err) {
+      setError("Training failed");
+    } finally {
+      setTrainLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      if (projectId && modelId) {
+        await deleteModelService(projectId, modelId);
+        navigate(`/projects/${projectId}`);
+      }
+    } catch (err) {
+      setError("Delete failed");
+    }
+  };
+
+  const handleEdit = () => {
+    navigate(`/model/${modelId}/edit`);
+  };
+
+  // Prepare components for tabs
+  const modelDetails = (
+    <ModelDetailsView
+      model={model || {}}
+      loading={loading}
+      trainLoading={trainLoading}
+      error={error}
+      onTrain={handleTrain}
+      onDelete={handleDelete}
+      onEdit={handleEdit}
+      onDownload={() => window.open(model.modelPath, "_blank")}
+    />
+  );
+
+  const retrainTab = model && projectId ? (
+    <RetrainTab model={model} projectId={projectId} />
+  ) : null;
+
+  const codeDisplay = model ? <CodeDisplay model={model} /> : null;
+
+  return (
+    <Layout>
+      <Typography
+        variant="h4"
+        mb={2}
+        pl={2}
+        sx={{
+          position: 'sticky',
+          top: 0,
+          bgcolor: 'background.default',
+          zIndex: 10,
+          py: 2,
+          mb: 0 // Remove margin bottom from here and handle it with padding if needed or keep it but ensure background covers it
+        }}
+      >
+        {model?.modelName || "Model Info"}
+      </Typography>
+
+      <ModelTabs
+        modelInfo={modelDetails}
+        retrainTab={retrainTab}
+        dataset={<Dataset projectId={projectId || ""} model={model} onModelUpdate={fetchModel} />}
+        code={codeDisplay}
+        AIAgent={<AIAgent projectId={projectId || ""} modelId={modelId || ""} />}
+        exportModel={<ExportModel
+          projectId={projectId || ""}
+          modelId={modelId || ""}
+          modelName={model?.modelName || "model"}
+          modelPath={model?.modelPath}
+        />}
+      />
+    </Layout>
+  );
+};
+
+export default ModelDetails;
