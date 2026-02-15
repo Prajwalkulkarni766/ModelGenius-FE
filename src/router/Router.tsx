@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router";
-import { BrowserRouter } from "react-router-dom";
+import { HashRouter } from "react-router-dom";
 
 import Login from '../pages/Login';
 import Signup from '../pages/Signup';
@@ -13,16 +13,18 @@ import NewModelWizard from "../pages/NewModelWizard";
 import ModelInfo from '../pages/ModelInfo';
 import ForgotPassword from '../pages/ForgotPassword';
 import ModelDetails from "../pages/ModelDetailsPage";
+import ComingSoon from "../pages/ComingSoon";
 
 const AppRouter = () => {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
-        <Route index element={<Login />} />
+        <Route path='/' element={<Login />} />
         <Route path='/signup' element={<Signup />} />
         <Route path='/forgot-password' element={<ForgotPassword />} />
 
         <Route path='/home' element={<Home />} />
+        <Route path='/ai-agent' element={<ComingSoon />} />
         <Route path='/setting' element={<Setting />} />
 
         <Route path='/projects' element={<Project />} />
@@ -37,7 +39,7 @@ const AppRouter = () => {
 
         <Route path='/projects/:projectId/model-details/:modelId' element={<ModelDetails />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 };
 

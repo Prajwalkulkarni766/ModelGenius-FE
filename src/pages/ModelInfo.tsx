@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { Typography, Box } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { Typography } from '@mui/material';
 import Layout from '../layouts/Layout';
 import ModelTabs from '../components/model/ModelTabs';
-import PivotedTable from '../components/model/PivotedTable'; // You might want to remove this or keep it?? It was sending static data. 
 import AIAgent from '../components/model/AIAgent';
 import ExportModel from '../components/model/ExportModel';
 import Dataset from '../components/model/Dataset';
@@ -44,7 +43,7 @@ const ModelInfo = () => {
         setEditModalOpen(true);
     };
 
-    const handleSaveEdit = async (id: string, updates: any) => {
+    const handleSaveEdit = async (_id: string, updates: any) => {
         if (!projectId || !modelId) return;
         setLoading(true);
         const response = await updateModelService(projectId, modelId, updates);
@@ -124,7 +123,7 @@ const ModelInfo = () => {
                 dataset={<Dataset projectId={projectId || ""} model={model} onModelUpdate={fetchModel} />}
                 code={codeDisplay}
                 AIAgent={<AIAgent projectId={projectId || ""} modelId={modelId || ""} />}
-                exportModel={<ExportModel />}
+                exportModel={<ExportModel projectId={projectId || ""} modelId={modelId || ""} modelName={model?.modelName || ""} modelPath={model?.modelPath} />}
             />
 
             <EditModelModal

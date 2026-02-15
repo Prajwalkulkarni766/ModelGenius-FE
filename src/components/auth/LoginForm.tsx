@@ -27,7 +27,7 @@ const LoginForm = () => {
         try {
             const { requestStatus, responseData } = await loginService(data.email, data.password);
             if (requestStatus) {
-                setUser(responseData.user)
+                setUser(responseData.data.user)
                 navigate("/home");
             } else {
                 setLoginError("Invalid credentials. Please try again.");
@@ -56,10 +56,32 @@ const LoginForm = () => {
             autoComplete="off"
             onSubmit={handleSubmit(onSubmit)}
         >
-            <Typography variant="h4" textAlign="center" my={2} component="div" fontWeight={600}>
+            <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                }}
+            >
+                <Box
+                    sx={{
+                        width: 64,
+                        height: 64,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}
+                >
+                    <img
+                        src="icon.ico"
+                        alt="Logo"
+                        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                    />
+                </Box>
+            </Box>
+            <Typography variant="h4" textAlign="center" component="div" fontWeight={600}>
                 ModelGenius
             </Typography>
-            <Typography variant="h6" textAlign="center" mb={3} color="text.secondary">
+            <Typography variant="h6" textAlign="center" mb={2} color="text.secondary">
                 Sign In to ModelGenius
             </Typography>
 
@@ -138,11 +160,11 @@ const LoginForm = () => {
                 </Typography>
             </Link>
 
-            <Button 
-                type="submit" 
-                variant="contained" 
-                color="primary" 
-                size="large" 
+            <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                size="large"
                 fullWidth
                 disabled={isLoading}
                 sx={{ mt: 1 }}

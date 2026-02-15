@@ -35,7 +35,7 @@ const NewModelWizard = () => {
     const [currentStep, setCurrentStep] = useState<Step>("step1");
 
     const { model } = modelStore();
-    const modelId = model?._id;
+    const modelId = model?._id || '';
     const currentIndex = steps.indexOf(currentStep);
 
     const goToNextStep = () => {

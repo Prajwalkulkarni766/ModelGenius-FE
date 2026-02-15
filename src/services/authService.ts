@@ -51,18 +51,21 @@ export const loginService = async (
       { email, password }
     );
 
+    // Save user for authenticated requests
+    localStorage.setItem("user", JSON.stringify(response.data.data.user))
+
     // Save token for authenticated requests
     localStorage.setItem("token", response.data.data.accessToken);
 
     return {
       requestStatus: true,
-      responseData: response.data.data,
+      responseData: response.data,
     };
   } catch (error) {
     console.error("Login failed:", error);
     return {
       requestStatus: false,
-      responseData: {} as LoginResponse,
+      responseData: {} as LoginApiResponse,
     };
   }
 };

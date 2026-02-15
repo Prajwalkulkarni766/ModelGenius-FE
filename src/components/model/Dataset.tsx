@@ -91,7 +91,7 @@ const Dataset: React.FC<DatasetProps> = ({ projectId, model, onModelUpdate }) =>
     <Box p={3} height="100%">
       <Grid container spacing={3} height="100%">
         {/* Left Sidebar: Dataset List */}
-        <Grid item xs={12} md={3} sx={{ borderRight: 1, borderColor: 'divider' }}>
+        <Grid size={{ xs: 12, md: 3 }} sx={{ borderRight: 1, borderColor: 'divider' }}>
           <Typography variant="h6" gutterBottom>Datasets</Typography>
           {loadingDatasets ? (
             <CircularProgress size={20} />
@@ -118,7 +118,7 @@ const Dataset: React.FC<DatasetProps> = ({ projectId, model, onModelUpdate }) =>
         </Grid>
 
         {/* Right Content: Preview */}
-        <Grid item xs={12} md={9}>
+        <Grid size={{ xs: 12, md: 9 }}>
           <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
             <Typography variant="h6">
               {selectedDatasetId ? "Dataset Preview" : "Select a Dataset"}

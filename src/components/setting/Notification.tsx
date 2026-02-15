@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 const Notification = () => {
 
-    const [data, setData] = useState<AlertProps[] | []>([]);
+    const [data] = useState<AlertProps[] | []>([]);
 
     const getNotification = async () => {
         // try {

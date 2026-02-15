@@ -17,17 +17,16 @@ const DeleteAccountForm = () => {
     });
 
     // Handle form submission
-    const onSubmit = async (data) => {
+    const onSubmit = async (data: { password: string }) => {
         try {
             // Assuming signupService handles the API call for login.
             const deleteAccountSuccess = await deleteAccountService(data.password);
 
-            console.log(deleteAccountSuccess)
-            // if (signupSuccess) {
-            navigate("/");
-            // } else {
-            //     setProfileUpdateError("Something went wrong. Please try again.");
-            // }
+            if (deleteAccountSuccess) {
+                navigate("/");
+            } else {
+                setDeleteAccountError("Something went wrong. Please try again.");
+            }
             setDeleteAccountError(null);
         } catch (error) {
             setDeleteAccountError("An error occurred. Please try again later.");

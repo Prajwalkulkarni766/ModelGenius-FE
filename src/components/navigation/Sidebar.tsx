@@ -10,6 +10,7 @@ import {
 import SideBarMenuItem from '../../components/dashboard/SideBarMenuItem';
 import { MenuItem } from '../../types/Menu';
 import { useLocation } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 
 const menus: MenuItem[] = [
   { icon: <HomeIcon />, text: 'Home', ref: '/home' },
@@ -25,10 +26,11 @@ const bottomMenus: MenuItem[] = [
 const Sidebar = () => {
   const location = useLocation();
   const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.removeItem("user");
-    window.location.href = '/';
+    navigate("/");
   };
 
   const getInitial = (name: string) => {
@@ -49,33 +51,7 @@ const Sidebar = () => {
         borderColor: 'divider',
       }}
     >
-      <Box
-        display="flex"
-        alignItems="center"
-        gap={2}
-        sx={{ p: 2, pb: 2 }}
-      >
-        <Box
-          sx={{
-            width: 40,
-            height: 40,
-            borderRadius: 2,
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Typography variant="h6" color="white" fontWeight={700} fontSize={18}>
-            M
-          </Typography>
-        </Box>
-        <Typography variant="h6" fontWeight={600} color="text.primary">
-          ModelGenius
-        </Typography>
-      </Box>
-
-      <Box display="flex" alignItems="center" gap={2} sx={{ px: 2, pb: 2 }}>
+      <Box display="flex" alignItems="center" gap={2} sx={{ px: 2, pb: 2, pt: 2 }}>
         <Avatar sx={{ bgcolor: 'primary.main', width: 36, height: 36 }}>
           {getInitial(user?.username || 'User')}
         </Avatar>
