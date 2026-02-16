@@ -67,7 +67,7 @@ const AIAgent = ({ projectId, modelId }: AIAgentProps) => {
   ];
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', p: 2 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: 500, p: 2 }}>
       <Typography variant="h6" gutterBottom fontWeight={600}>
         AI Assistant
       </Typography>
@@ -78,7 +78,8 @@ const AIAgent = ({ projectId, modelId }: AIAgentProps) => {
       <Paper
         sx={{
           flex: 1,
-          overflow: 'auto',
+          overflowY: 'scroll',
+          overflowX: 'hidden',
           p: 2,
           mb: 2,
           bgcolor: '#f8fafc',

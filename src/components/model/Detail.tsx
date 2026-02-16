@@ -75,9 +75,9 @@ const ModelDetailsView = ({
   return (
     <Box>
       <Grid container spacing={3}>
-        {/* Model Configuration */}
-        <Grid size={{ xs: 12, lg: 7 }}>
-          <Paper sx={{ p: 3, height: '100%' }}>
+        <Stack gap={2} width={'100%'}>
+          {/* Model Configuration */}
+          <Paper sx={{ p: 3 }}>
             <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
               <TuneIcon color="primary" />
               Model Configuration
@@ -137,11 +137,9 @@ const ModelDetailsView = ({
               )}
             </Box>
           </Paper>
-        </Grid>
 
-        {/* Performance Metrics */}
-        <Grid size={{ xs: 12, lg: 7 }}>
-          <Paper sx={{ p: 3, height: '100%' }}>
+          {/* Performance Metrics */}
+          <Paper sx={{ p: 3 }}>
             <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
               Performance Metrics
             </Typography>
@@ -178,26 +176,22 @@ const ModelDetailsView = ({
               </Box>
             )}
           </Paper>
-        </Grid>
 
-        {/* Actions */}
-        <Grid size={{ xs: 12 }}>
-          <Box display="flex" justifyContent="flex-end" gap={2}>
-            <Button
-              variant="outlined"
-              color="error"
-              startIcon={<DeleteOutlineIcon />}
-              onClick={onDelete}
-              sx={{
-                borderRadius: 2,
-                textTransform: 'none',
-                px: 3
-              }}
-            >
-              Delete Model
-            </Button>
-          </Box>
-        </Grid>
+          {/* Actions */}
+          <Button
+            variant="outlined"
+            color="error"
+            startIcon={<DeleteOutlineIcon />}
+            onClick={onDelete}
+            sx={{
+              borderRadius: 2,
+              textTransform: 'none',
+              px: 3
+            }}
+          >
+            Delete Model
+          </Button>
+        </Stack>
       </Grid>
     </Box>
   );

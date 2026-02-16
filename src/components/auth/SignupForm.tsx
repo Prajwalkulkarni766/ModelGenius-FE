@@ -72,7 +72,7 @@ const SignupForm = () => {
                     }}
                 >
                     <img
-                        src="/icon.png"
+                        src="icon.ico"
                         alt="Logo"
                         style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                     />

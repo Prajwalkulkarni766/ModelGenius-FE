@@ -102,7 +102,7 @@ const ModelDetails = () => {
           bgcolor: 'background.default',
           zIndex: 10,
           py: 2,
-          mb: 0 // Remove margin bottom from here and handle it with padding if needed or keep it but ensure background covers it
+          mb: 0
         }}
       >
         {model?.modelName || "Model Info"}
