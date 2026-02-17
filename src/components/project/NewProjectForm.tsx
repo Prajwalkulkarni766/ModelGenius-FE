@@ -4,11 +4,13 @@ import { newProjectService } from "../../services/projectService";
 import { useState } from "react";
 import { NewProject } from "../../types/Project";
 import ImageDropZone from "./ImageDropZone";
+import { useSnackbar } from "../../hooks/useSnackbar";
 
 const NewProjectForm = () => {
 
   const [newProjectError, setNewProjectError] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const { showSnackbar } = useSnackbar();
 
   // Initialize react-hook-form
   const { control, handleSubmit, formState: { errors }, reset } = useForm<NewProject>({
@@ -35,13 +37,16 @@ const NewProjectForm = () => {
 
       if (newProjectSuccess) {
         setNewProjectError(null);
+        showSnackbar("Project created successfully!", "success");
         reset();
         setSelectedFile(null);
       } else {
         setNewProjectError("Something went wrong. Please try again.");
+        showSnackbar("Failed to create project. Please try again.", "error");
       }
     } catch (error) {
       setNewProjectError("An error occurred. Please try again later.");
+      showSnackbar("An error occurred. Please try again later.", "error");
       console.error(error);
     }
   };

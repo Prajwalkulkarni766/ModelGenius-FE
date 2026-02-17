@@ -5,6 +5,7 @@ import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 import { UploadDatasetProps } from '../../types/Dataset';
 import { uploadDatasetService } from "../../services/datasetService";
 import { useNavigate } from 'react-router-dom';
+import { useSnackbar } from '../../hooks/useSnackbar';
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -26,6 +27,7 @@ const UploadDataset = ({ projectId }: UploadDatasetProps) => {
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [fileUploadError, setFileUploadError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { showSnackbar } = useSnackbar();
 
   const { control, handleSubmit, setValue, watch, formState: { errors } } = useForm<UploadDataForm>({
     defaultValues: {
@@ -63,6 +65,7 @@ const UploadDataset = ({ projectId }: UploadDatasetProps) => {
 
       if (!file || file.length == 0) {
         setFileUploadError("No file selected");
+        showSnackbar("No file selected.", "error");
         return;
       }
 
@@ -70,13 +73,16 @@ const UploadDataset = ({ projectId }: UploadDatasetProps) => {
 
       if (response) {
         setFileUploadError(null);
+        showSnackbar("Dataset uploaded successfully!", "success");
         navigate(`/projects/${projectId}`);
       }
       else {
         setFileUploadError("Failed to upload file")
+        showSnackbar("Failed to upload file. Please try again.", "error");
       }
     } catch (error) {
       setFileUploadError("" + error);
+      showSnackbar("An error occurred. Please try again.", "error");
       console.error(error);
     }
   };

@@ -1,6 +1,6 @@
 // src/pages/ModelDetails.tsx
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import ModelDetailsView from "../components/model/Detail";
 import RetrainTab from '../components/model/RetrainTab';
 import { getModelService, deleteModelService, trainModelService } from "../services/modelService";
@@ -10,11 +10,14 @@ import ModelTabs from '../components/model/ModelTabs';
 import AIAgent from '../components/model/AIAgent';
 import ExportModel from '../components/model/ExportModel';
 import Dataset from '../components/model/Dataset';
-import { Typography } from '@mui/material';
+import { Typography, Box, IconButton } from '@mui/material';
+import { useSnackbar } from '../hooks/useSnackbar';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const ModelDetails = () => {
   const { projectId, modelId } = useParams<{ projectId: string; modelId: string }>();
   const navigate = useNavigate();
+  const { showSnackbar } = useSnackbar();
 
   const [model, setModel] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -46,10 +49,12 @@ const ModelDetails = () => {
         const res = await trainModelService(projectId, modelId);
         if (res?.data) {
           setModel({ ...model, metrics: res.data });
+          showSnackbar("Training completed successfully!", "success");
         }
       }
     } catch (err) {
       setError("Training failed");
+      showSnackbar("Training failed.", "error");
     } finally {
       setTrainLoading(false);
     }
@@ -59,10 +64,12 @@ const ModelDetails = () => {
     try {
       if (projectId && modelId) {
         await deleteModelService(projectId, modelId);
+        showSnackbar("Model deleted successfully!", "success");
         navigate(`/projects/${projectId}`);
       }
     } catch (err) {
       setError("Delete failed");
+      showSnackbar("Failed to delete model.", "error");
     }
   };
 
@@ -92,21 +99,12 @@ const ModelDetails = () => {
 
   return (
     <Layout>
-      <Typography
-        variant="h4"
-        mb={2}
-        pl={2}
-        sx={{
-          position: 'sticky',
-          top: 0,
-          bgcolor: 'background.default',
-          zIndex: 10,
-          py: 2,
-          mb: 0
-        }}
-      >
-        {model?.modelName || "Model Info"}
-      </Typography>
+      <Box display="flex" alignItems="center" gap={1} pl={2} sx={{ position: 'sticky', top: 0, bgcolor: 'background.default', zIndex: 10, py: 2, mb: 0 }}>
+          <IconButton component={Link} to={`/projects/${projectId}`}>
+              <ArrowBackIcon />
+          </IconButton>
+          <Typography variant="h4">{model?.modelName || "Model Info"}</Typography>
+      </Box>
 
       <ModelTabs
         modelInfo={modelDetails}

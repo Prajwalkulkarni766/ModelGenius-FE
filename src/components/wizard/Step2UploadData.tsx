@@ -6,6 +6,7 @@ import { Dataset } from "../../types/Dataset";
 import { getDatasetService, getDatasetColumnsService } from "../../services/datasetService";
 import { setModelDatasetsService, setTargetColumnService } from "../../services/modelService";
 import Layout from "../../layouts/Layout";
+import { useSnackbar } from "../../hooks/useSnackbar";
 
 type Step2Form = {
     datasetId: string;
@@ -16,6 +17,7 @@ const Step2UploadData = ({ projectId, goToNextStep, modelId }: ModelStepProps) =
     const [datasets, setDatasets] = useState<Dataset[]>([]);
     const [columns, setColumns] = useState<string[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const { showSnackbar } = useSnackbar();
 
     const { control, handleSubmit, watch, formState: { errors } } = useForm<Step2Form>({
         defaultValues: {
@@ -80,6 +82,7 @@ const Step2UploadData = ({ projectId, goToNextStep, modelId }: ModelStepProps) =
             goToNextStep();
         } catch (err) {
             setError(String(err));
+            showSnackbar(String(err), "error");
         }
     };
 

@@ -20,6 +20,7 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import SaveIcon from '@mui/icons-material/Save';
 import ScienceIcon from '@mui/icons-material/Science';
 import TuneIcon from '@mui/icons-material/Tune';
+import { useSnackbar } from "../../hooks/useSnackbar";
 
 interface RetrainTabProps {
   model: any;
@@ -36,6 +37,7 @@ const RetrainTab: React.FC<RetrainTabProps> = ({ model, projectId }) => {
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
     if (model) {
@@ -60,11 +62,14 @@ const RetrainTab: React.FC<RetrainTabProps> = ({ model, projectId }) => {
       const res = await trainDryRunService(projectId, model._id, formData);
       if (res && res.data) {
         setResults(res.data);
+        showSnackbar("Dry run completed successfully!", "success");
       } else {
         setError("Retraining failed. Please try again.");
+        showSnackbar("Retraining failed. Please try again.", "error");
       }
     } catch (err) {
       setError("An error occurred during retraining.");
+      showSnackbar("An error occurred during retraining.", "error");
     } finally {
       setLoading(false);
     }
@@ -89,6 +94,7 @@ const RetrainTab: React.FC<RetrainTabProps> = ({ model, projectId }) => {
 
       if (trainRes && trainRes.data) {
         setResults(trainRes.data);
+        showSnackbar("Model saved and trained successfully!", "success");
       } else {
         throw new Error("Failed to save and train model.");
       }
@@ -96,6 +102,7 @@ const RetrainTab: React.FC<RetrainTabProps> = ({ model, projectId }) => {
     } catch (err: any) {
       console.error(err);
       setError(err.message || "An error occurred during saving.");
+      showSnackbar(err.message || "An error occurred during saving.", "error");
     } finally {
       setLoading(false);
     }

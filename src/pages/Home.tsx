@@ -4,10 +4,12 @@ import ProjectCard from '../components/project/ProjectCard';
 import { ProjectCardProps } from '../types/Project';
 import { deleteProjectService, fetchLatestProjectsService } from '../services/projectService';
 import { useState, useEffect } from 'react';
+import { useSnackbar } from '../hooks/useSnackbar';
 
 const Home = () => {
 
     const [projectData, setProjectData] = useState<ProjectCardProps[] | null>(null);
+    const { showSnackbar } = useSnackbar();
 
     const getProject = async () => {
         try {
@@ -26,10 +28,14 @@ const Home = () => {
             const success: boolean = await deleteProjectService(projectId)
 
             if (success) {
+                showSnackbar("Project deleted successfully!", "success");
                 setProjectData(prev => prev?.filter(p => p._id !== projectId) || null);
+            } else {
+                showSnackbar("Failed to delete project.", "error");
             }
         } catch (error) {
             console.error(error)
+            showSnackbar("Failed to delete project.", "error");
         }
     }
 

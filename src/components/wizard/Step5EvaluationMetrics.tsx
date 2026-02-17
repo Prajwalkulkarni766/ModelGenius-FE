@@ -3,6 +3,7 @@ import { Typography, Box, Button, CircularProgress } from "@mui/material";
 import MetricsCard from "./MetricsCard";
 import { ModelStepProps } from "../../types/Model";
 import { trainModelService } from "../../services/modelService";
+import { useSnackbar } from "../../hooks/useSnackbar";
 
 type Metrics = {
     accuracy?: number;
@@ -19,6 +20,7 @@ const Step5EvaluationMetrics = ({ projectId, modelId, goToNextStep }: ModelStepP
     const [metrics, setMetrics] = useState<Metrics | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const { showSnackbar } = useSnackbar();
 
     useEffect(() => {
         const trainModel = async () => {
@@ -33,12 +35,15 @@ const Step5EvaluationMetrics = ({ projectId, modelId, goToNextStep }: ModelStepP
 
                 if (response && response.data) {
                     setMetrics(response.data);
+                    showSnackbar("Model trained successfully!", "success");
                 } else {
                     setError("Failed to train the model or fetch metrics");
+                    showSnackbar("Failed to train the model.", "error");
                 }
             } catch (err) {
                 console.error(err);
                 setError("Error occurred during model training");
+                showSnackbar("Error occurred during model training.", "error");
             } finally {
                 setLoading(false);
             }

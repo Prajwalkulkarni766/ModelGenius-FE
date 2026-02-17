@@ -3,6 +3,7 @@ import { Typography, Box, FormControl, InputLabel, Select, MenuItem, Button } fr
 import { ModelStepProps } from '../../types/Model';
 import { settingDataCleaningMethodService } from "../../services/modelService";
 import { useState } from "react";
+import { useSnackbar } from "../../hooks/useSnackbar";
 
 type PreprocessingFormValues = {
     handlingMissingValueStrategy: string;
@@ -12,6 +13,7 @@ type PreprocessingFormValues = {
 
 const Step3DataPreprocessing = ({ projectId, goToNextStep, modelId }: ModelStepProps) => {
     const [dataPreProcessingError, setDataPreProcessingError] = useState<string | null>(null);
+    const { showSnackbar } = useSnackbar();
     const {
         control,
         handleSubmit,
@@ -33,9 +35,11 @@ const Step3DataPreprocessing = ({ projectId, goToNextStep, modelId }: ModelStepP
                 goToNextStep();
             } else {
                 setDataPreProcessingError("Failed to save preprocessing settings.");
+                showSnackbar("Failed to save preprocessing settings.", "error");
             }
         } catch (error) {
             setDataPreProcessingError("Error during preprocessing submission: " + error);
+            showSnackbar("Error during preprocessing submission.", "error");
         }
     };
 

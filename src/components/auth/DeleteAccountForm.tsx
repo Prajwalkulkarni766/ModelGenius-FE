@@ -3,11 +3,13 @@ import { useForm, Controller } from "react-hook-form";
 import { deleteAccountService } from "../../services/settingService";
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
+import { useSnackbar } from "../../hooks/useSnackbar";
 
 const DeleteAccountForm = () => {
 
     const navigate = useNavigate();
     const [deleteAccountError, setDeleteAccountError] = useState<string | null>(null);
+    const { showSnackbar } = useSnackbar();
 
     // Initialize react-hook-form
     const { control, handleSubmit, formState: { errors } } = useForm({
@@ -26,10 +28,12 @@ const DeleteAccountForm = () => {
                 navigate("/");
             } else {
                 setDeleteAccountError("Something went wrong. Please try again.");
+                showSnackbar("Failed to delete account. Please try again.", "error");
             }
             setDeleteAccountError(null);
         } catch (error) {
             setDeleteAccountError("An error occurred. Please try again later.");
+            showSnackbar("An error occurred. Please try again later.", "error");
             console.error(error);
         }
     };

@@ -21,7 +21,7 @@ import {
 import { getDatasetService, getDatasetPreviewService } from '../../services/datasetService';
 import { setModelDatasetsService } from '../../services/modelService';
 import { Dataset as DatasetType } from '../../types/Dataset';
-import { toast } from 'react-toastify';
+import { useSnackbar } from '../../hooks/useSnackbar';
 
 interface DatasetProps {
   projectId: string;
@@ -36,6 +36,7 @@ const Dataset: React.FC<DatasetProps> = ({ projectId, model, onModelUpdate }) =>
   const [loadingDatasets, setLoadingDatasets] = useState(false);
   const [loadingPreview, setLoadingPreview] = useState(false);
   const [saving, setSaving] = useState(false);
+  const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
     fetchDatasets();
@@ -79,10 +80,10 @@ const Dataset: React.FC<DatasetProps> = ({ projectId, model, onModelUpdate }) =>
     setSaving(true);
     const res = await setModelDatasetsService(projectId, model._id, selectedDatasetId);
     if (res && res.data) {
-      toast.success("Dataset assigned to model successfully!");
+      showSnackbar("Dataset assigned to model successfully!", "success");
       if (onModelUpdate) onModelUpdate();
     } else {
-      toast.error("Failed to assign dataset.");
+      showSnackbar("Failed to assign dataset.", "error");
     }
     setSaving(false);
   };

@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { LoginUser } from '../../types/User';
 import { userStore } from '../../store/userStore';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { useSnackbar } from '../../hooks/useSnackbar';
 
 const LoginForm = () => {
     const navigate = useNavigate();
@@ -14,6 +15,7 @@ const LoginForm = () => {
     const [loginError, setLoginError] = useState<string | null>(null);
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const { showSnackbar } = useSnackbar();
 
     const { control, handleSubmit, formState: { errors } } = useForm<LoginUser>({
         defaultValues: {
@@ -31,6 +33,7 @@ const LoginForm = () => {
                 navigate("/home");
             } else {
                 setLoginError("Invalid credentials. Please try again.");
+                showSnackbar("Login failed. Please check your credentials.", "error");
             }
         } catch (error) {
             setLoginError("" + error);

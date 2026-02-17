@@ -6,6 +6,7 @@ import { signupService } from "../../services/authService";
 import { useState } from 'react';
 import { SignupUser } from "../../types/User";
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { useSnackbar } from '../../hooks/useSnackbar';
 
 const SignupForm = () => {
 
@@ -13,6 +14,7 @@ const SignupForm = () => {
     const [signupError, setSignupError] = useState<string | null>(null);
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const { showSnackbar } = useSnackbar();
 
     const { control, handleSubmit, formState: { errors } } = useForm<SignupUser>({
         defaultValues: {
@@ -28,12 +30,15 @@ const SignupForm = () => {
             const signupSuccess = await signupService(data.username, data.email, data.password);
 
             if (signupSuccess) {
+                showSnackbar("Account created successfully! Please sign in.", "success");
                 navigate("/");
             } else {
                 setSignupError("Something went wrong. Please try again.");
+                showSnackbar("Signup failed. Please try again.", "error");
             }
         } catch (error) {
             setSignupError("An error occurred. Please try again later.");
+            showSnackbar("An error occurred. Please try again later.", "error");
             console.error(error);
         } finally {
             setIsLoading(false);

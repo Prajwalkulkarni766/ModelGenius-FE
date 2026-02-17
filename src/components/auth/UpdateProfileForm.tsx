@@ -3,10 +3,12 @@ import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { getProfileService, updateProfileService } from "../../services/settingService";
 import { useState, useEffect } from 'react';
 import { UpdateProfileUser } from "../../types/User";
+import { useSnackbar } from "../../hooks/useSnackbar";
 
 const UpdateProfileForm = () => {
 
   const [profileUpdateError, setProfileUpdateError] = useState<string | null>(null);
+  const { showSnackbar } = useSnackbar();
 
   // Initialize react-hook-form
   const { control, handleSubmit, formState: { errors }, reset } = useForm<UpdateProfileUser>({
@@ -23,12 +25,14 @@ const UpdateProfileForm = () => {
       const updateProfileSuccess = await updateProfileService(data.username, data.email);
 
       if (updateProfileSuccess) {
-        // navigate("/home");
+        showSnackbar("Profile updated successfully!", "success");
       } else {
         setProfileUpdateError("Something went wrong. Please try again.");
+        showSnackbar("Failed to update profile. Please try again.", "error");
       }
     } catch (error) {
       setProfileUpdateError("An error occurred. Please try again later.");
+      showSnackbar("An error occurred. Please try again later.", "error");
       console.error(error);
     }
   };

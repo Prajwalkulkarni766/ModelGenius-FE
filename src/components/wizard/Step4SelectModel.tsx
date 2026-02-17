@@ -3,6 +3,7 @@ import { Typography, Box, Radio, FormControlLabel, RadioGroup, FormControl, Butt
 import { ModelStepProps } from '../../types/Model';
 import { setMachineLearningModelService } from "../../services/modelService";
 import { useState } from "react";
+import { useSnackbar } from "../../hooks/useSnackbar";
 
 type ModelSelectionForm = {
     selectedModel: string;
@@ -10,6 +11,7 @@ type ModelSelectionForm = {
 
 const Step4SelectModel = ({ projectId, goToNextStep, modelId }: ModelStepProps) => {
     const [modelSelectionError, setModelSelectionError] = useState<string | null>(null);
+    const { showSnackbar } = useSnackbar();
     const {
         control,
         handleSubmit,
@@ -29,9 +31,11 @@ const Step4SelectModel = ({ projectId, goToNextStep, modelId }: ModelStepProps) 
                 goToNextStep();
             } else {
                 setModelSelectionError("Failed to save selected model");
+                showSnackbar("Failed to save selected model.", "error");
             }
         } catch (error) {
             setModelSelectionError("Error during model selection submission: " + error);
+            showSnackbar("Error during model selection submission.", "error");
         }
     };
 

@@ -11,6 +11,7 @@ import FileCopyIcon from '@mui/icons-material/FileCopy';
 import Divider from '@mui/material/Divider';
 import { Dataset } from '../../types/Dataset';
 import { deleteDatasetService } from '../../services/datasetService';
+import { useSnackbar } from '../../hooks/useSnackbar';
 
 interface DatasetListProps {
   projectId: string;
@@ -20,6 +21,7 @@ interface DatasetListProps {
 export default function DatasetList({ projectId, dataset = [] }: DatasetListProps) {
   const [datasets, setDatasets] = React.useState<Dataset[]>(dataset);
   const [deletingId, setDeletingId] = React.useState<string | null>(null);
+  const { showSnackbar } = useSnackbar();
 
   const handleDelete = async (datasetId: string) => {
     // const confirm = window.confirm("Are you sure you want to delete this dataset?");
@@ -30,7 +32,10 @@ export default function DatasetList({ projectId, dataset = [] }: DatasetListProp
     const response = await deleteDatasetService(projectId, datasetId);
 
     if (response) {
+      showSnackbar("Dataset deleted successfully!", "success");
       setDatasets(prev => prev.filter(d => d._id !== datasetId));
+    } else {
+      showSnackbar("Failed to delete dataset.", "error");
     }
 
     setDeletingId(null);

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Typography } from '@mui/material';
+import { Typography, Box, IconButton } from '@mui/material';
 import Layout from '../layouts/Layout';
 import ModelTabs from '../components/model/ModelTabs';
 import AIAgent from '../components/model/AIAgent';
@@ -8,13 +8,15 @@ import Dataset from '../components/model/Dataset';
 import ModelDetailsView from '../components/model/Detail';
 import EditModelModal from '../components/model/EditModelModal';
 import CodeDisplay from '../components/model/CodeDisplay';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getModelService, updateModelService, trainModelService, deleteModelService } from '../services/modelService';
-import { toast } from 'react-toastify';
+import { useSnackbar } from '../hooks/useSnackbar';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const ModelInfo = () => {
     const { projectId, modelId } = useParams<{ projectId: string; modelId: string }>();
     const navigate = useNavigate();
+    const { showSnackbar } = useSnackbar();
 
     const [model, setModel] = useState<any>(null);
     const [loading, setLoading] = useState(false);
@@ -48,11 +50,11 @@ const ModelInfo = () => {
         setLoading(true);
         const response = await updateModelService(projectId, modelId, updates);
         if (response) {
-            toast.success("Model updated successfully");
+            showSnackbar("Model updated successfully", "success");
             setEditModalOpen(false);
             fetchModel(); // Refresh data
         } else {
-            toast.error("Failed to update model");
+            showSnackbar("Failed to update model", "error");
         }
         setLoading(false);
     };
@@ -62,11 +64,11 @@ const ModelInfo = () => {
         setTrainLoading(true);
         const response = await trainModelService(projectId, modelId);
         if (response) {
-            toast.success("Training started/completed successfully!");
+            showSnackbar("Training started/completed successfully!", "success");
             // Refresh to get new metrics
             fetchModel();
         } else {
-            toast.error("Training failed.");
+            showSnackbar("Training failed.", "error");
         }
         setTrainLoading(false);
     };
@@ -77,17 +79,17 @@ const ModelInfo = () => {
             setLoading(true);
             const response = await deleteModelService(projectId, modelId);
             if (response.requestStatus) {
-                toast.success("Model deleted");
+                showSnackbar("Model deleted", "success");
                 navigate(`/projects/${projectId}`);
             } else {
-                toast.error("Failed to delete model");
+                showSnackbar("Failed to delete model", "error");
                 setLoading(false);
             }
         }
     };
 
     const handleDownload = () => {
-        toast.info("Download functionality coming soon!");
+        showSnackbar("Download functionality coming soon!", "info");
     };
 
     if (!model && !loading) {
@@ -116,7 +118,12 @@ const ModelInfo = () => {
 
     return (
         <Layout>
-            <Typography variant="h4" mb={2}>{model?.modelName || "Model Info"}</Typography>
+            <Box display="flex" alignItems="center" gap={1} mb={2}>
+                <IconButton component={Link} to={`/projects/${projectId}`}>
+                    <ArrowBackIcon />
+                </IconButton>
+                <Typography variant="h4">{model?.modelName || "Model Info"}</Typography>
+            </Box>
 
             <ModelTabs
                 modelInfo={modelDetails}

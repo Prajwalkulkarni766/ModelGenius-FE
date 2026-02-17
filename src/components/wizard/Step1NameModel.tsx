@@ -4,11 +4,13 @@ import { useState } from 'react';
 import { BaseModelStepProps, ModelName } from '../../types/Model';
 import { createNewModel } from "../../services/modelService";
 import { modelStore } from "../../store/modelStore";
+import { useSnackbar } from "../../hooks/useSnackbar";
 
 const Step1NameModel = ({ projectId, goToNextStep }: BaseModelStepProps) => {
 
     const { setModel } = modelStore();
     const [modelCreationError, setModelCreationError] = useState<string | null>(null);
+    const { showSnackbar } = useSnackbar();
 
     const { control, handleSubmit, formState: { errors } } = useForm<ModelName>({
         defaultValues: {
@@ -27,9 +29,11 @@ const Step1NameModel = ({ projectId, goToNextStep }: BaseModelStepProps) => {
             }
             else {
                 setModelCreationError("Failed to create model")
+                showSnackbar("Failed to create model. Please try again.", "error");
             }
         } catch (error) {
             setModelCreationError("" + error);
+            showSnackbar("An error occurred. Please try again.", "error");
             console.error(error);
         }
     };

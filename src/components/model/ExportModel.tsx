@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Box, Button, Typography, CircularProgress, Paper, Alert, Stack } from "@mui/material";
 import { exportModelService, exportModelCodeService } from "../../services/modelService";
-import { toast } from 'react-toastify';
+import { useSnackbar } from "../../hooks/useSnackbar";
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import CodeIcon from '@mui/icons-material/Code';
 
@@ -15,14 +15,15 @@ interface ExportModelProps {
 const ExportModel: React.FC<ExportModelProps> = ({ projectId, modelId, modelName, modelPath }) => {
     const [downloadingCode, setDownloadingCode] = useState(false);
     const [downloadingModel, setDownloadingModel] = useState(false);
+    const { showSnackbar } = useSnackbar();
 
     const handleExportCode = async () => {
         setDownloadingCode(true);
         const success = await exportModelCodeService(projectId, modelId, modelName);
         if (success) {
-            toast.success("Python code downloaded successfully!");
+            showSnackbar("Python code downloaded successfully!", "success");
         } else {
-            toast.error("Failed to download Python code. Ensure the model has been configured.");
+            showSnackbar("Failed to download Python code. Ensure the model has been configured.", "error");
         }
         setDownloadingCode(false);
     };
@@ -31,9 +32,9 @@ const ExportModel: React.FC<ExportModelProps> = ({ projectId, modelId, modelName
         setDownloadingModel(true);
         const success = await exportModelService(projectId, modelId, modelName);
         if (success) {
-            toast.success("Model file downloaded successfully!");
+            showSnackbar("Model file downloaded successfully!", "success");
         } else {
-            toast.error("Failed to download model. Ensure the model has been trained.");
+            showSnackbar("Failed to download model. Ensure the model has been trained.", "error");
         }
         setDownloadingModel(false);
     };

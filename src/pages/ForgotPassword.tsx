@@ -1,5 +1,7 @@
-import { Box, Paper } from "@mui/material"
+import { Box, Paper, IconButton } from "@mui/material"
 import ForgotPasswordForm from "../components/auth/ForgotPasswordForm";
+import { Link } from "react-router-dom";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const ForgotPassword = () => {
     return (
@@ -23,6 +25,9 @@ const ForgotPassword = () => {
                     mx: 2,
                 }}
             >
+                <IconButton component={Link} to="/" sx={{ mb: 1 }}>
+                    <ArrowBackIcon />
+                </IconButton>
                 <ForgotPasswordForm />
             </Paper>
         </Box>
