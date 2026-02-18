@@ -11,7 +11,6 @@ import { useSnackbar } from '../../hooks/useSnackbar';
 const SignupForm = () => {
 
     const navigate = useNavigate();
-    const [signupError, setSignupError] = useState<string | null>(null);
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const { showSnackbar } = useSnackbar();
@@ -33,11 +32,9 @@ const SignupForm = () => {
                 showSnackbar("Account created successfully! Please sign in.", "success");
                 navigate("/");
             } else {
-                setSignupError("Something went wrong. Please try again.");
                 showSnackbar("Signup failed. Please try again.", "error");
             }
         } catch (error) {
-            setSignupError("An error occurred. Please try again later.");
             showSnackbar("An error occurred. Please try again later.", "error");
             console.error(error);
         } finally {
@@ -177,12 +174,6 @@ const SignupForm = () => {
                     />
                 )}
             />
-
-            {signupError && (
-                <Typography color="error" textAlign="center" mt={2}>
-                    {signupError}
-                </Typography>
-            )}
 
             <Button
                 type='submit'

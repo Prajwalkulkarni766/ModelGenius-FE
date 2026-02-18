@@ -25,7 +25,6 @@ type UploadDataForm = {
 
 const UploadDataset = ({ projectId }: UploadDatasetProps) => {
   const [isDragging, setIsDragging] = useState<boolean>(false);
-  const [fileUploadError, setFileUploadError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { showSnackbar } = useSnackbar();
 
@@ -64,7 +63,6 @@ const UploadDataset = ({ projectId }: UploadDatasetProps) => {
       const file = data.dataFiles;
 
       if (!file || file.length == 0) {
-        setFileUploadError("No file selected");
         showSnackbar("No file selected.", "error");
         return;
       }
@@ -72,16 +70,13 @@ const UploadDataset = ({ projectId }: UploadDatasetProps) => {
       const response = await uploadDatasetService(projectId, file);
 
       if (response) {
-        setFileUploadError(null);
         showSnackbar("Dataset uploaded successfully!", "success");
         navigate(`/projects/${projectId}`);
       }
       else {
-        setFileUploadError("Failed to upload file")
         showSnackbar("Failed to upload file. Please try again.", "error");
       }
     } catch (error) {
-      setFileUploadError("" + error);
       showSnackbar("An error occurred. Please try again.", "error");
       console.error(error);
     }
@@ -159,12 +154,6 @@ const UploadDataset = ({ projectId }: UploadDatasetProps) => {
             </ListItem>
           ))}
         </List>
-      )}
-
-      {fileUploadError && (
-        <Typography color="error" textAlign="center" mt={2}>
-          {fileUploadError}
-        </Typography>
       )}
 
       <Box mt={3} display="flex" justifyContent="center">

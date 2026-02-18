@@ -7,7 +7,6 @@ import { useSnackbar } from "../../hooks/useSnackbar";
 
 const UpdateProfileForm = () => {
 
-  const [profileUpdateError, setProfileUpdateError] = useState<string | null>(null);
   const { showSnackbar } = useSnackbar();
 
   // Initialize react-hook-form
@@ -27,11 +26,9 @@ const UpdateProfileForm = () => {
       if (updateProfileSuccess) {
         showSnackbar("Profile updated successfully!", "success");
       } else {
-        setProfileUpdateError("Something went wrong. Please try again.");
         showSnackbar("Failed to update profile. Please try again.", "error");
       }
     } catch (error) {
-      setProfileUpdateError("An error occurred. Please try again later.");
       showSnackbar("An error occurred. Please try again later.", "error");
       console.error(error);
     }
@@ -116,13 +113,6 @@ const UpdateProfileForm = () => {
           />
         )}
       />
-
-      {/* Display error message if update profile fails */}
-      {profileUpdateError && (
-        <Typography color="error" textAlign="center" mt={2}>
-          {profileUpdateError}
-        </Typography>
-      )}
 
       <Button type="submit" variant="contained" color="primary" size="large" fullWidth>
         Update Profile

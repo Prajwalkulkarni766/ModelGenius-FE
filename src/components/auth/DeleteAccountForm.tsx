@@ -8,7 +8,6 @@ import { useSnackbar } from "../../hooks/useSnackbar";
 const DeleteAccountForm = () => {
 
     const navigate = useNavigate();
-    const [deleteAccountError, setDeleteAccountError] = useState<string | null>(null);
     const { showSnackbar } = useSnackbar();
 
     // Initialize react-hook-form
@@ -27,12 +26,9 @@ const DeleteAccountForm = () => {
             if (deleteAccountSuccess) {
                 navigate("/");
             } else {
-                setDeleteAccountError("Something went wrong. Please try again.");
                 showSnackbar("Failed to delete account. Please try again.", "error");
             }
-            setDeleteAccountError(null);
         } catch (error) {
-            setDeleteAccountError("An error occurred. Please try again later.");
             showSnackbar("An error occurred. Please try again later.", "error");
             console.error(error);
         }
@@ -76,13 +72,6 @@ const DeleteAccountForm = () => {
                     />
                 )}
             />
-
-            {/* Display error message if delete account fails */}
-            {deleteAccountError && (
-                <Typography color="error">
-                    {deleteAccountError}
-                </Typography>
-            )}
 
             <Button type="submit" variant="contained" color="error" size="large" fullWidth>
                 Delete Account

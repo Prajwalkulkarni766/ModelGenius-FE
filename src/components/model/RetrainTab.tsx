@@ -11,7 +11,6 @@ import {
   Paper,
   Grid,
   CircularProgress,
-  Alert,
   Divider
 } from "@mui/material";
 import { trainDryRunService, updateModelService, trainModelService } from "../../services/modelService";
@@ -36,7 +35,6 @@ const RetrainTab: React.FC<RetrainTabProps> = ({ model, projectId }) => {
   });
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<any>(null);
-  const [error, setError] = useState<string | null>(null);
   const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
@@ -56,7 +54,6 @@ const RetrainTab: React.FC<RetrainTabProps> = ({ model, projectId }) => {
 
   const handleRetrain = async () => {
     setLoading(true);
-    setError(null);
     setResults(null);
     try {
       const res = await trainDryRunService(projectId, model._id, formData);
@@ -64,11 +61,9 @@ const RetrainTab: React.FC<RetrainTabProps> = ({ model, projectId }) => {
         setResults(res.data);
         showSnackbar("Dry run completed successfully!", "success");
       } else {
-        setError("Retraining failed. Please try again.");
         showSnackbar("Retraining failed. Please try again.", "error");
       }
     } catch (err) {
-      setError("An error occurred during retraining.");
       showSnackbar("An error occurred during retraining.", "error");
     } finally {
       setLoading(false);
@@ -77,7 +72,6 @@ const RetrainTab: React.FC<RetrainTabProps> = ({ model, projectId }) => {
 
   const handleSave = async () => {
     setLoading(true);
-    setError(null);
     try {
       const updateRes = await updateModelService(projectId, model._id, {
         algorithm: formData.algorithm,
@@ -101,7 +95,6 @@ const RetrainTab: React.FC<RetrainTabProps> = ({ model, projectId }) => {
 
     } catch (err: any) {
       console.error(err);
-      setError(err.message || "An error occurred during saving.");
       showSnackbar(err.message || "An error occurred during saving.", "error");
     } finally {
       setLoading(false);
@@ -250,9 +243,7 @@ const RetrainTab: React.FC<RetrainTabProps> = ({ model, projectId }) => {
               Training Results
             </Typography>
 
-            {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-
-            {!results && !loading && !error && (
+            {!results && !loading && (
               <Box
                 sx={{
                   display: 'flex',

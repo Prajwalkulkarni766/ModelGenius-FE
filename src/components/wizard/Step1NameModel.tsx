@@ -9,7 +9,6 @@ import { useSnackbar } from "../../hooks/useSnackbar";
 const Step1NameModel = ({ projectId, goToNextStep }: BaseModelStepProps) => {
 
     const { setModel } = modelStore();
-    const [modelCreationError, setModelCreationError] = useState<string | null>(null);
     const { showSnackbar } = useSnackbar();
 
     const { control, handleSubmit, formState: { errors } } = useForm<ModelName>({
@@ -23,16 +22,13 @@ const Step1NameModel = ({ projectId, goToNextStep }: BaseModelStepProps) => {
             const response = await createNewModel(projectId, data.modelName);
 
             if (response) {
-                setModelCreationError(null);
                 setModel(response.data);
                 goToNextStep();
             }
             else {
-                setModelCreationError("Failed to create model")
                 showSnackbar("Failed to create model. Please try again.", "error");
             }
         } catch (error) {
-            setModelCreationError("" + error);
             showSnackbar("An error occurred. Please try again.", "error");
             console.error(error);
         }
@@ -66,12 +62,6 @@ const Step1NameModel = ({ projectId, goToNextStep }: BaseModelStepProps) => {
                     />
                 )}
             />
-
-            {modelCreationError && (
-                <Typography color="error" textAlign="center" mt={2}>
-                    {modelCreationError}
-                </Typography>
-            )}
 
             <Box display={"flex"} mt={2} mx={10} gap={3} justifyContent={'center'} alignItems={'center'}>
                 <Button type="submit" variant="contained" color="primary" size="large">

@@ -19,13 +19,12 @@ type Metrics = {
 const Step5EvaluationMetrics = ({ projectId, modelId, goToNextStep }: ModelStepProps) => {
     const [metrics, setMetrics] = useState<Metrics | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
     const { showSnackbar } = useSnackbar();
 
     useEffect(() => {
         const trainModel = async () => {
             if (!projectId || !modelId) {
-                setError("Invalid project or model ID");
+                showSnackbar("Invalid project or model ID", "error");
                 setLoading(false);
                 return;
             }
@@ -37,12 +36,10 @@ const Step5EvaluationMetrics = ({ projectId, modelId, goToNextStep }: ModelStepP
                     setMetrics(response.data);
                     showSnackbar("Model trained successfully!", "success");
                 } else {
-                    setError("Failed to train the model or fetch metrics");
                     showSnackbar("Failed to train the model.", "error");
                 }
             } catch (err) {
                 console.error(err);
-                setError("Error occurred during model training");
                 showSnackbar("Error occurred during model training.", "error");
             } finally {
                 setLoading(false);
@@ -61,12 +58,6 @@ const Step5EvaluationMetrics = ({ projectId, modelId, goToNextStep }: ModelStepP
                     <CircularProgress />
                     <Typography ml={2}>Training model and computing metrics...</Typography>
                 </Box>
-            )}
-
-            {error && (
-                <Typography color="error" textAlign="center" mt={2}>
-                    {error}
-                </Typography>
             )}
 
             {!loading && metrics && (
@@ -88,7 +79,7 @@ const Step5EvaluationMetrics = ({ projectId, modelId, goToNextStep }: ModelStepP
                 </Box>
             )}
 
-            {!loading && !error && metrics && (
+            {!loading && metrics && (
                 <>
                     <Typography color="textSecondary" mb={5} mt={3} textAlign="center">
                         If you are not satisfied with the evaluation metrics, you can take help from our AI agent.

@@ -10,7 +10,6 @@ type ModelSelectionForm = {
 };
 
 const Step4SelectModel = ({ projectId, goToNextStep, modelId }: ModelStepProps) => {
-    const [modelSelectionError, setModelSelectionError] = useState<string | null>(null);
     const { showSnackbar } = useSnackbar();
     const {
         control,
@@ -27,14 +26,11 @@ const Step4SelectModel = ({ projectId, goToNextStep, modelId }: ModelStepProps) 
             const { requestStatus } = await setMachineLearningModelService(projectId, modelId, data.selectedModel);
 
             if (requestStatus) {
-                setModelSelectionError(null);
                 goToNextStep();
             } else {
-                setModelSelectionError("Failed to save selected model");
                 showSnackbar("Failed to save selected model.", "error");
             }
         } catch (error) {
-            setModelSelectionError("Error during model selection submission: " + error);
             showSnackbar("Error during model selection submission.", "error");
         }
     };
@@ -76,12 +72,6 @@ const Step4SelectModel = ({ projectId, goToNextStep, modelId }: ModelStepProps) 
                     </FormControl>
                 )}
             />
-
-            {modelSelectionError && (
-                <Typography color="error" textAlign="center" mt={2}>
-                    {modelSelectionError}
-                </Typography>
-            )}
 
             <Box display="flex" justifyContent="center" mt={4}>
                 <Button type="submit" variant="contained" color="primary" size="large">

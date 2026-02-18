@@ -16,7 +16,6 @@ type Step2Form = {
 const Step2UploadData = ({ projectId, goToNextStep, modelId }: ModelStepProps) => {
     const [datasets, setDatasets] = useState<Dataset[]>([]);
     const [columns, setColumns] = useState<string[]>([]);
-    const [error, setError] = useState<string | null>(null);
     const { showSnackbar } = useSnackbar();
 
     const { control, handleSubmit, watch, formState: { errors } } = useForm<Step2Form>({
@@ -39,7 +38,7 @@ const Step2UploadData = ({ projectId, goToNextStep, modelId }: ModelStepProps) =
                 }
             } catch (err) {
                 console.error(err);
-                setError("Failed to load datasets");
+                showSnackbar("Failed to load datasets.", "error");
             }
         };
         fetchDatasets();
@@ -57,7 +56,7 @@ const Step2UploadData = ({ projectId, goToNextStep, modelId }: ModelStepProps) =
                     }
                 } catch (err) {
                     console.error(err);
-                    setError("Failed to load columns for selected dataset");
+                    showSnackbar("Failed to load columns for selected dataset.", "error");
                 }
             };
             fetchColumns();
@@ -81,7 +80,6 @@ const Step2UploadData = ({ projectId, goToNextStep, modelId }: ModelStepProps) =
 
             goToNextStep();
         } catch (err) {
-            setError(String(err));
             showSnackbar(String(err), "error");
         }
     };
@@ -136,8 +134,6 @@ const Step2UploadData = ({ projectId, goToNextStep, modelId }: ModelStepProps) =
                     )}
                 />
             )}
-
-            {error && <Typography color="error" textAlign="center">{error}</Typography>}
 
             <Box display="flex" justifyContent="center" mt={4}>
                 <Button type="submit" variant="contained" size="large">Save & Next</Button>

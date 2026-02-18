@@ -12,7 +12,6 @@ import { useSnackbar } from '../../hooks/useSnackbar';
 const LoginForm = () => {
     const navigate = useNavigate();
     const { setUser } = userStore();
-    const [loginError, setLoginError] = useState<string | null>(null);
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const { showSnackbar } = useSnackbar();
@@ -32,11 +31,10 @@ const LoginForm = () => {
                 setUser(responseData.data.user)
                 navigate("/home");
             } else {
-                setLoginError("Invalid credentials. Please try again.");
                 showSnackbar("Login failed. Please check your credentials.", "error");
             }
         } catch (error) {
-            setLoginError("" + error);
+            showSnackbar("" + error, "error");
             console.error(error);
         } finally {
             setIsLoading(false);
@@ -150,12 +148,6 @@ const LoginForm = () => {
                     />
                 )}
             />
-
-            {loginError && (
-                <Typography color="error" textAlign="center" mt={2}>
-                    {loginError}
-                </Typography>
-            )}
 
             <Link to="/forgot-password">
                 <Typography color='primary' textAlign={"right"} sx={{ '&:hover': { textDecoration: 'underline' } }}>

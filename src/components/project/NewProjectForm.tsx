@@ -8,7 +8,6 @@ import { useSnackbar } from "../../hooks/useSnackbar";
 
 const NewProjectForm = () => {
 
-  const [newProjectError, setNewProjectError] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { showSnackbar } = useSnackbar();
 
@@ -36,16 +35,13 @@ const NewProjectForm = () => {
       const newProjectSuccess = await newProjectService(formData);
 
       if (newProjectSuccess) {
-        setNewProjectError(null);
         showSnackbar("Project created successfully!", "success");
         reset();
         setSelectedFile(null);
       } else {
-        setNewProjectError("Something went wrong. Please try again.");
         showSnackbar("Failed to create project. Please try again.", "error");
       }
     } catch (error) {
-      setNewProjectError("An error occurred. Please try again later.");
       showSnackbar("An error occurred. Please try again later.", "error");
       console.error(error);
     }
@@ -117,14 +113,6 @@ const NewProjectForm = () => {
         />
 
         <ImageDropZone file={selectedFile} onFileSelect={setSelectedFile} />
-
-        {/* Display error message if new project creation fails */}
-        {newProjectError && (
-          <Typography color="error" mt={2}>
-            {newProjectError}
-          </Typography>
-        )}
-
 
         <Button sx={{ mt: 2, alignSelf: 'flex-start' }} type="submit" variant="contained" color="primary" size="large" >
           Create

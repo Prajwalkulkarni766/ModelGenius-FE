@@ -12,7 +12,6 @@ type PreprocessingFormValues = {
 };
 
 const Step3DataPreprocessing = ({ projectId, goToNextStep, modelId }: ModelStepProps) => {
-    const [dataPreProcessingError, setDataPreProcessingError] = useState<string | null>(null);
     const { showSnackbar } = useSnackbar();
     const {
         control,
@@ -31,14 +30,11 @@ const Step3DataPreprocessing = ({ projectId, goToNextStep, modelId }: ModelStepP
             const response = await settingDataCleaningMethodService(projectId, modelId, data.handlingMissingValueStrategy, data.encodingCategoricalMethod, data.normalizationTechnique);
 
             if (response) {
-                setDataPreProcessingError(null);
                 goToNextStep();
             } else {
-                setDataPreProcessingError("Failed to save preprocessing settings.");
                 showSnackbar("Failed to save preprocessing settings.", "error");
             }
         } catch (error) {
-            setDataPreProcessingError("Error during preprocessing submission: " + error);
             showSnackbar("Error during preprocessing submission.", "error");
         }
     };
@@ -122,12 +118,6 @@ const Step3DataPreprocessing = ({ projectId, goToNextStep, modelId }: ModelStepP
                     </FormControl>
                 )}
             />
-
-            {dataPreProcessingError && (
-                <Typography color="error" textAlign="center" mt={2}>
-                    {dataPreProcessingError}
-                </Typography>
-            )}
 
             {/* Submit */}
             <Box display="flex" justifyContent="center" mt={4}>
