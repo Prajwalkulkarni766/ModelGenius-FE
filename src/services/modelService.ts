@@ -262,16 +262,21 @@ export const getModelService = async (
   projectId: string,
   modelId: string
 ): Promise<ApiResponse<Model> | null> => {
-  const token = localStorage.getItem("token");
+  try {
+    const token = localStorage.getItem("token");
 
-  const response = await axios.get<ApiResponse<Model>>(
-    `${API_URL}/${projectId}/models/${modelId}`,
-    {
-      headers: { Authorization: token ? `Bearer ${token}` : "" },
-    }
-  );
+    const response = await axios.get<ApiResponse<Model>>(
+      `${API_URL}/${projectId}/models/${modelId}`,
+      {
+        headers: { Authorization: token ? `Bearer ${token}` : "" },
+      }
+    );
 
-  return response.data;
+    return response.data;
+  } catch (error) {
+    console.error("Failed to get model:", error);
+    return null;
+  }
 }
 
 export const updateModelService = async (

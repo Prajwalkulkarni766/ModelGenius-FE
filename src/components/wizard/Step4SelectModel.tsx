@@ -2,7 +2,6 @@ import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { Typography, Box, Radio, FormControlLabel, RadioGroup, FormControl, Button } from "@mui/material";
 import { ModelStepProps } from '../../types/Model';
 import { setMachineLearningModelService } from "../../services/modelService";
-import { useState } from "react";
 import { useSnackbar } from "../../hooks/useSnackbar";
 
 type ModelSelectionForm = {
