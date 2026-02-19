@@ -1,25 +1,19 @@
-import axios from "axios";
+import apiClient from "../lib/apiClient";
 import { UpdateProfileUser } from "../types/User";
 import { ApiResponse } from "../types/ApiResponse";
 
-const API_URL = "http://localhost:5000/api/v1/users"; // adjust if needed
+const API_PATH = "/api/v1/users";
 
 export const deleteAccountService = async (
   password: string
 ): Promise<boolean> => {
   try {
-    const token = localStorage.getItem("token");
-
-    const response = await axios.delete(`${API_URL}/delete-account`, {
-      headers: {
-        Authorization: token ? `Bearer ${token}` : "",
-      },
+    const response = await apiClient.delete(`${API_PATH}/delete-account`, {
       data: {
-        password, // axios allows body in DELETE via `data`
+        password,
       },
     });
 
-    // Clear local auth data after successful deletion
     localStorage.removeItem("token");
 
     return response.status === 200 || response.status === 204;
@@ -30,16 +24,9 @@ export const deleteAccountService = async (
 };
 
 
-// Get current user profile
 export const getProfileService = async (): Promise<ApiResponse<UpdateProfileUser> | null> => {
   try {
-    const token = localStorage.getItem("token");
-
-    const response = await axios.get<ApiResponse<UpdateProfileUser>>(`${API_URL}/profile`, {
-      headers: {
-        Authorization: token ? `Bearer ${token}` : "",
-      },
-    });
+    const response = await apiClient.get<ApiResponse<UpdateProfileUser>>(`${API_PATH}/profile`);
 
     return response.data;
   } catch (error) {
@@ -48,19 +35,12 @@ export const getProfileService = async (): Promise<ApiResponse<UpdateProfileUser
   }
 };
 
-// Update user profile
 export const updateProfileService = async (
   username: string,
   email: string
 ): Promise<boolean> => {
   try {
-    const token = localStorage.getItem("token");
-
-    const response = await axios.patch<ApiResponse<UpdateProfileUser>>(`${API_URL}/update-account`, { username, email }, {
-      headers: {
-        Authorization: token ? `Bearer ${token}` : "",
-      },
-    });
+    const response = await apiClient.patch<ApiResponse<UpdateProfileUser>>(`${API_PATH}/update-account`, { username, email });
 
     return response.status === 200;
   } catch (error) {

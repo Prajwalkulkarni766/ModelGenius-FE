@@ -14,6 +14,8 @@ import ModelInfo from '../pages/ModelInfo';
 import ForgotPassword from '../pages/ForgotPassword';
 import ModelDetails from "../pages/ModelDetailsPage";
 import ComingSoon from "../pages/ComingSoon";
+import NotFound from "../pages/NotFound";
+import ProtectedRoute from "../components/ProtectedRoute";
 
 const AppRouter = () => {
   return (
@@ -23,21 +25,25 @@ const AppRouter = () => {
         <Route path='/signup' element={<Signup />} />
         <Route path='/forgot-password' element={<ForgotPassword />} />
 
-        <Route path='/home' element={<Home />} />
-        <Route path='/ai-agent' element={<ComingSoon />} />
-        <Route path='/setting' element={<Setting />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path='/home' element={<Home />} />
+          <Route path='/ai-agent' element={<ComingSoon />} />
+          <Route path='/setting' element={<Setting />} />
 
-        <Route path='/projects' element={<Project />} />
-        <Route path='/projects/new' element={<NewProject />} />
-        <Route path='/projects/:id' element={<ProjectInfo />} />
+          <Route path='/projects' element={<Project />} />
+          <Route path='/projects/new' element={<NewProject />} />
+          <Route path='/projects/:id' element={<ProjectInfo />} />
 
-        <Route path='/projects/:projectId/models/new' element={<NewModelWizard />} />
-        <Route path='/projects/:projectId/models/:modelId' element={<ModelInfo />} />
+          <Route path='/projects/:projectId/models/new' element={<NewModelWizard />} />
+          <Route path='/projects/:projectId/models/:modelId' element={<ModelInfo />} />
 
-        <Route path='/projects/:projectId/dataset/new' element={<Dataset />} />
+          <Route path='/projects/:projectId/dataset/new' element={<Dataset />} />
 
 
-        <Route path='/projects/:projectId/model-details/:modelId' element={<ModelDetails />} />
+          <Route path='/projects/:projectId/model-details/:modelId' element={<ModelDetails />} />
+        </Route>
+
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </HashRouter>
   );

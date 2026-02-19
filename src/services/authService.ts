@@ -1,7 +1,7 @@
-import axios from "axios";
+import apiClient from "../lib/apiClient";
 import { User } from "../types/User";
 
-const API_URL = "http://localhost:5000/api/v1/users";
+const API_PATH = "/api/v1/users";
 
 export const signupService = async (
   username: string,
@@ -9,7 +9,7 @@ export const signupService = async (
   password: string
 ): Promise<boolean> => {
   try {
-    const response = await axios.post(`${API_URL}/register`, {
+    const response = await apiClient.post(`${API_PATH}/register`, {
       username,
       email,
       password,
@@ -46,15 +46,13 @@ export const loginService = async (
   responseData: LoginApiResponse;
 }> => {
   try {
-    const response = await axios.post<LoginApiResponse>(
-      `${API_URL}/login`,
+    const response = await apiClient.post<LoginApiResponse>(
+      `${API_PATH}/login`,
       { email, password }
     );
 
-    // Save user for authenticated requests
     localStorage.setItem("user", JSON.stringify(response.data.data.user))
 
-    // Save token for authenticated requests
     localStorage.setItem("token", response.data.data.accessToken);
 
     return {

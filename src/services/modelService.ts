@@ -1,8 +1,8 @@
-import axios from "axios";
+import apiClient from "../lib/apiClient";
 import { Model } from "../types/Model";
 import { ApiResponse } from "../types/ApiResponse";
 
-const API_URL = "http://localhost:5000/api/v1/models";
+const API_PATH = "/api/v1/models";
 
 export const setMachineLearningModelService = async (
   projectId: string | null,
@@ -14,17 +14,10 @@ export const setMachineLearningModelService = async (
       throw new Error("Missing projectId or modelId");
     }
 
-    const token = localStorage.getItem("token");
-
-    const response = await axios.patch(
-      `${API_URL}/${projectId}/models/${modelId}`,
+    const response = await apiClient.patch(
+      `${API_PATH}/${projectId}/models/${modelId}`,
       {
         algorithm: selectedModel,
-      },
-      {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : "",
-        },
       }
     );
 
@@ -42,15 +35,10 @@ export const deleteModelService = async (
   modelId: string
 ): Promise<{ requestStatus: boolean }> => {
   try {
-    const token = localStorage.getItem("token");
-
-    const response = await axios.delete(
-      `${API_URL}/${projectId}/models/${modelId}`,
+    const response = await apiClient.delete(
+      `${API_PATH}/${projectId}/models/${modelId}`,
       {
-        data: { projectId }, // important: DELETE body goes in `data`
-        headers: {
-          Authorization: token ? `Bearer ${token}` : "",
-        },
+        data: { projectId },
       }
     );
 
@@ -72,17 +60,10 @@ export const createNewModel = async (
       throw new Error("Missing projectId");
     }
 
-    const token = localStorage.getItem("token");
-
-    const response = await axios.post(
-      `${API_URL}/${projectId}/models`,
+    const response = await apiClient.post(
+      `${API_PATH}/${projectId}/models`,
       {
         modelName,
-      },
-      {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : "",
-        },
       }
     );
 
@@ -109,23 +90,16 @@ export const settingDataCleaningMethodService = async (
       throw new Error("Missing projectId or modelId");
     }
 
-    const token = localStorage.getItem("token");
-
-    const response = await axios.patch<ApiResponse<{
+    const response = await apiClient.patch<ApiResponse<{
       cleaningStrategy: string;
       encodingMethod: string;
       normalizationTechnique: string;
     }>>(
-      `${API_URL}/${projectId}/models/${modelId}`,
+      `${API_PATH}/${projectId}/models/${modelId}`,
       {
         handlingMissingValueStrategy,
         encodingCategoricalMethod,
         normalizationTechnique,
-      },
-      {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : "",
-        },
       }
     );
 
@@ -150,19 +124,12 @@ export const setModelDatasetsService = async (
       throw new Error("No datasetId provided");
     }
 
-    const token = localStorage.getItem("token");
-
-    const response = await axios.patch<
+    const response = await apiClient.patch<
       ApiResponse<{ datasetId: string[] }>
     >(
-      `${API_URL}/${projectId}/models/${modelId}`,
+      `${API_PATH}/${projectId}/models/${modelId}`,
       {
         datasetId: datasetId,
-      },
-      {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : "",
-        },
       }
     );
 
@@ -186,17 +153,10 @@ export const setTargetColumnService = async (
       throw new Error("Missing targetColumn");
     }
 
-    const token = localStorage.getItem("token");
-
-    const response = await axios.patch<ApiResponse<{ targetColumn: string }>>(
-      `${API_URL}/${projectId}/models/${modelId}`,
+    const response = await apiClient.patch<ApiResponse<{ targetColumn: string }>>(
+      `${API_PATH}/${projectId}/models/${modelId}`,
       {
         targetColumn,
-      },
-      {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : "",
-        },
       }
     );
 
@@ -212,14 +172,9 @@ export const trainModelService = async (
   modelId: string
 ): Promise<ApiResponse<{ accuracy: number; precision: number; recall: number; f1: number }> | null> => {
   try {
-    const token = localStorage.getItem("token");
-
-    const response = await axios.post<ApiResponse<{ accuracy: number; precision: number; recall: number; f1: number }>>(
-      `${API_URL}/${projectId}/models/${modelId}/train`,
-      {},
-      {
-        headers: { Authorization: token ? `Bearer ${token}` : "" },
-      }
+    const response = await apiClient.post<ApiResponse<{ accuracy: number; precision: number; recall: number; f1: number }>>(
+      `${API_PATH}/${projectId}/models/${modelId}/train`,
+      {}
     );
 
     return response.data;
@@ -241,14 +196,9 @@ export const trainDryRunService = async (
   }
 ): Promise<ApiResponse<{ accuracy?: number; precision?: number; recall?: number; f1?: number; mse?: number; rmse?: number; r2_score?: number }> | null> => {
   try {
-    const token = localStorage.getItem("token");
-
-    const response = await axios.post(
-      `${API_URL}/${projectId}/models/${modelId}/train-dry-run`,
-      data,
-      {
-        headers: { Authorization: token ? `Bearer ${token}` : "" },
-      }
+    const response = await apiClient.post(
+      `${API_PATH}/${projectId}/models/${modelId}/train-dry-run`,
+      data
     );
 
     return response.data;
@@ -263,13 +213,8 @@ export const getModelService = async (
   modelId: string
 ): Promise<ApiResponse<Model> | null> => {
   try {
-    const token = localStorage.getItem("token");
-
-    const response = await axios.get<ApiResponse<Model>>(
-      `${API_URL}/${projectId}/models/${modelId}`,
-      {
-        headers: { Authorization: token ? `Bearer ${token}` : "" },
-      }
+    const response = await apiClient.get<ApiResponse<Model>>(
+      `${API_PATH}/${projectId}/models/${modelId}`
     );
 
     return response.data;
@@ -285,14 +230,9 @@ export const updateModelService = async (
   updates: Partial<Model>
 ): Promise<ApiResponse<Model> | null> => {
   try {
-    const token = localStorage.getItem("token");
-
-    const response = await axios.patch<ApiResponse<Model>>(
-      `${API_URL}/${projectId}/models/${modelId}`,
-      updates,
-      {
-        headers: { Authorization: token ? `Bearer ${token}` : "" },
-      }
+    const response = await apiClient.patch<ApiResponse<Model>>(
+      `${API_PATH}/${projectId}/models/${modelId}`,
+      updates
     );
 
     return response.data;
@@ -308,29 +248,19 @@ export const exportModelService = async (
   modelName: string
 ): Promise<boolean> => {
   try {
-    const token = localStorage.getItem("token");
-
-    const response = await axios.get(
-      `${API_URL}/${projectId}/models/${modelId}/export`,
+    const response = await apiClient.get(
+      `${API_PATH}/${projectId}/models/${modelId}/export`,
       {
-        headers: { Authorization: token ? `Bearer ${token}` : "" },
         responseType: 'blob'
       }
     );
 
-    // Create href link and trigger download
     const url = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement('a');
     link.href = url;
 
-    // Try to guess extension from content-type or just default to .pkl or .h5 based on response, 
-    // or just let backend content-disposition handle it if we visited URL directly.
-    // But since we use axios (for header), we need to set name manually or extract from header.
-    // For simplicity, let's use a generic name or append .pkl if not present.
-    // Ideally we should look at 'content-disposition' header.
-
     const contentDisposition = response.headers['content-disposition'];
-    let fileName = `${modelName}_model.pkl`; // Default
+    let fileName = `${modelName}_model.pkl`;
     if (contentDisposition) {
       const fileNameMatch = contentDisposition.match(/filename="?(.+)"?/);
       if (fileNameMatch && fileNameMatch.length === 2)
@@ -355,12 +285,9 @@ export const exportModelCodeService = async (
   modelName: string
 ): Promise<boolean> => {
   try {
-    const token = localStorage.getItem("token");
-
-    const response = await axios.get(
-      `${API_URL}/${projectId}/models/${modelId}/export-code`,
+    const response = await apiClient.get(
+      `${API_PATH}/${projectId}/models/${modelId}/export-code`,
       {
-        headers: { Authorization: token ? `Bearer ${token}` : "" },
         responseType: 'blob'
       }
     );
@@ -394,12 +321,9 @@ export const getModelCodeService = async (
   modelId: string
 ): Promise<string | null> => {
   try {
-    const token = localStorage.getItem("token");
-
-    const response = await axios.get(
-      `${API_URL}/${projectId}/models/${modelId}/export-code`,
+    const response = await apiClient.get(
+      `${API_PATH}/${projectId}/models/${modelId}/export-code`,
       {
-        headers: { Authorization: token ? `Bearer ${token}` : "" },
         responseType: 'text'
       }
     );
@@ -418,11 +342,9 @@ export const aiChatService = async (
   chatHistory: { role: string; content: string }[]
 ): Promise<{ reply: string } | null> => {
   try {
-    const token = localStorage.getItem("token");
-    const response = await axios.post(
-      `${API_URL}/${projectId}/models/${modelId}/ai-chat`,
-      { message, chatHistory },
-      { headers: { Authorization: token ? `Bearer ${token}` : "" } }
+    const response = await apiClient.post(
+      `${API_PATH}/${projectId}/models/${modelId}/ai-chat`,
+      { message, chatHistory }
     );
     return response.data?.data;
   } catch (error) {

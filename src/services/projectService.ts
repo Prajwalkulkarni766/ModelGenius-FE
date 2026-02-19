@@ -1,21 +1,15 @@
-import axios from "axios";
+import apiClient from "../lib/apiClient";
 import { ProjectDetailsResponse } from "../types/Project";
 import { ProjectCardProps } from "../types/Project";
 import { ApiResponse } from "../types/ApiResponse";
 
-const API_URL = "http://localhost:5000/api/v1/projects";
+const API_PATH = "/api/v1/projects";
 
 export const newProjectService = async (
   formData: FormData
 ): Promise<boolean> => {
   try {
-    const token = localStorage.getItem("token");
-
-    const response = await axios.post(`${API_URL}`, formData, {
-      headers: {
-        Authorization: token ? `Bearer ${token}` : "",
-      },
-    });
+    const response = await apiClient.post(`${API_PATH}`, formData);
 
     return response.status === 200 || response.status === 201;
   } catch (error) {
@@ -28,16 +22,8 @@ export const fetchProjectDetailsService = async (
   projectId: string
 ): Promise<ApiResponse<ProjectDetailsResponse> | null> => {
   try {
-
-    const token = localStorage.getItem("token");
-
-    const response = await axios.get<ApiResponse<ProjectDetailsResponse>>(
-      `${API_URL}/${projectId}`,
-      {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-      }
+    const response = await apiClient.get<ApiResponse<ProjectDetailsResponse>>(
+      `${API_PATH}/${projectId}`
     );
 
     return response.data;
@@ -50,13 +36,7 @@ export const fetchProjectDetailsService = async (
 
 export const fetchLatestProjectsService = async (): Promise<ApiResponse<ProjectCardProps[]> | null> => {
   try {
-    const token = localStorage.getItem("token");
-
-    const response = await axios.get<ApiResponse<ProjectCardProps[]>>(`${API_URL}/latest`, {
-      headers: {
-        Authorization: token ? `Bearer ${token}` : "",
-      },
-    });
+    const response = await apiClient.get<ApiResponse<ProjectCardProps[]>>(`${API_PATH}/latest`);
 
     return response.data;
   } catch (error) {
@@ -67,13 +47,7 @@ export const fetchLatestProjectsService = async (): Promise<ApiResponse<ProjectC
 
 export const deleteProjectService = async (projectId: string): Promise<boolean> => {
   try {
-    const token = localStorage.getItem("token");
-
-    const response = await axios.delete(`${API_URL}/${projectId}`, {
-      headers: {
-        Authorization: token ? `Bearer ${token}` : "",
-      },
-    });
+    const response = await apiClient.delete(`${API_PATH}/${projectId}`);
 
     return response.status === 200 || response.status === 204;
   } catch (error) {
@@ -84,13 +58,7 @@ export const deleteProjectService = async (projectId: string): Promise<boolean> 
 
 export const fetchProjectsService = async (): Promise<ApiResponse<ProjectCardProps[]> | null> => {
   try {
-    const token = localStorage.getItem("token");
-
-    const response = await axios.get<ApiResponse<ProjectCardProps[]>>(`${API_URL}/projects`, {
-      headers: {
-        Authorization: token ? `Bearer ${token}` : "",
-      },
-    });
+    const response = await apiClient.get<ApiResponse<ProjectCardProps[]>>(`${API_PATH}/projects`);
 
     return response.data;
   } catch (error) {

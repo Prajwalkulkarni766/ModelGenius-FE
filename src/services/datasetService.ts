@@ -1,8 +1,8 @@
-import axios from "axios";
+import apiClient from "../lib/apiClient";
 import { ApiResponse } from "../types/ApiResponse";
 import { Dataset } from "../types/Dataset";
 
-const API_URL = "http://localhost:5000/api/v1/datasets";
+const API_PATH = "/api/v1/datasets";
 
 export const getDatasetService = async (
   projectId: string
@@ -12,15 +12,8 @@ export const getDatasetService = async (
       throw new Error("Missing modelId, projectId, or file");
     }
 
-    const token = localStorage.getItem("token");
-
-    const response = await axios.get<ApiResponse<Dataset[]>>(
-      `${API_URL}/${projectId}/datasets`,
-      {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-      }
+    const response = await apiClient.get<ApiResponse<Dataset[]>>(
+      `${API_PATH}/${projectId}/datasets`
     );
 
     return response.data;
@@ -39,8 +32,6 @@ export const uploadDatasetService = async (
       throw new Error("Missing modelId, projectId, or file");
     }
 
-    const token = localStorage.getItem("token");
-
     const formData = new FormData();
 
     files.forEach(file => {
@@ -48,12 +39,11 @@ export const uploadDatasetService = async (
     });
 
 
-    const response = await axios.post<ApiResponse<Dataset>>(
-      `${API_URL}/${projectId}/datasets`,
+    const response = await apiClient.post<ApiResponse<Dataset>>(
+      `${API_PATH}/${projectId}/datasets`,
       formData,
       {
         headers: {
-          Authorization: token ? `Bearer ${token}` : "",
           "Content-Type": "multipart/form-data",
         },
       }
@@ -75,15 +65,8 @@ export const deleteDatasetService = async (
       throw new Error("Missing projectId or datasetId");
     }
 
-    const token = localStorage.getItem("token");
-
-    const response = await axios.delete<ApiResponse<Dataset>>(
-      `${API_URL}/${projectId}/datasets/${datasetId}`,
-      {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-      }
+    const response = await apiClient.delete<ApiResponse<Dataset>>(
+      `${API_PATH}/${projectId}/datasets/${datasetId}`
     );
 
     return response.data;
@@ -102,15 +85,8 @@ export const getDatasetColumnsService = async (
       throw new Error("Missing projectId or datasetId");
     }
 
-    const token = localStorage.getItem("token");
-
-    const response = await axios.get<ApiResponse<string[]>>(
-      `${API_URL}/${projectId}/datasets/${datasetId}/columns`,
-      {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-      }
+    const response = await apiClient.get<ApiResponse<string[]>>(
+      `${API_PATH}/${projectId}/datasets/${datasetId}/columns`
     );
 
     return response.data;
@@ -129,15 +105,8 @@ export const getDatasetPreviewService = async (
       throw new Error("Missing projectId or datasetId");
     }
 
-    const token = localStorage.getItem("token");
-
-    const response = await axios.get<ApiResponse<any[]>>(
-      `${API_URL}/${projectId}/datasets/${datasetId}/preview`,
-      {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-      }
+    const response = await apiClient.get<ApiResponse<any[]>>(
+      `${API_PATH}/${projectId}/datasets/${datasetId}/preview`
     );
 
     return response.data;
@@ -146,4 +115,3 @@ export const getDatasetPreviewService = async (
     return null;
   }
 };
-
