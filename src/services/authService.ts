@@ -67,3 +67,11 @@ export const loginService = async (
     };
   }
 };
+
+export const logoutService = async (): Promise<void> => {
+  try {
+    await apiClient.post(`${API_PATH}/logout`);
+  } catch (error) {
+    console.error("Logout API call failed:", error);
+  }
+};

@@ -11,6 +11,10 @@ import SideBarMenuItem from '../../components/dashboard/SideBarMenuItem';
 import { MenuItem } from '../../types/Menu';
 import { useLocation } from 'react-router';
 import { useNavigate } from 'react-router-dom';
+import { userStore } from '../../store/userStore';
+import { modelStore } from '../../store/modelStore';
+import { projectStore } from '../../store/projectStore';
+import { logoutService } from '../../services/authService';
 
 const menus: MenuItem[] = [
   { icon: <HomeIcon />, text: 'Home', ref: '/home' },
@@ -29,7 +33,12 @@ const Sidebar = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
+    logoutService();
+    userStore.getState().clearUser();
+    modelStore.getState().clearModel();
+    projectStore.getState().clearProject();
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
     navigate("/");
   };
 

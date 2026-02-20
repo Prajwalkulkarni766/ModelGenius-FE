@@ -87,7 +87,11 @@ const ModelDetails = () => {
       onTrain={handleTrain}
       onDelete={handleDelete}
       onEdit={handleEdit}
-      onDownload={() => window.open(model.modelPath, "_blank")}
+      onDownload={() => {
+        if (model?.modelPath) {
+          window.open(model.modelPath, "_blank");
+        }
+      }}
     />
   );
 
