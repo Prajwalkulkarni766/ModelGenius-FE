@@ -271,6 +271,7 @@ export const exportModelService = async (
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
 
     return true;
   } catch (error) {
@@ -308,6 +309,7 @@ export const exportModelCodeService = async (
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
 
     return true;
   } catch (error) {

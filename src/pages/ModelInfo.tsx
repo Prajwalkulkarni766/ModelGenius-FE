@@ -8,6 +8,7 @@ import Dataset from '../components/model/Dataset';
 import ModelDetailsView from '../components/model/Detail';
 import EditModelModal from '../components/model/EditModelModal';
 import CodeDisplay from '../components/model/CodeDisplay';
+import ConfirmDialog from '../components/ConfirmDialog';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getModelService, updateModelService, trainModelService, deleteModelService } from '../services/modelService';
 import { useSnackbar } from '../hooks/useSnackbar';
@@ -23,6 +24,7 @@ const ModelInfo = () => {
     const [trainLoading, setTrainLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [editModalOpen, setEditModalOpen] = useState(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
     const fetchModel = async () => {
         if (!projectId || !modelId) return;
@@ -94,24 +96,25 @@ const ModelInfo = () => {
 
     const handleDelete = async () => {
         if (!projectId || !modelId) return;
-        if (window.confirm("Are you sure you want to delete this model?")) {
-            setLoading(true);
-            try {
-                const response = await deleteModelService(projectId, modelId);
-                if (response.requestStatus) {
-                    showSnackbar("Model deleted", "success");
-                    navigate(`/projects/${projectId}`);
-                } else {
-                    showSnackbar("Failed to delete model", "error");
-                    setLoading(false);
-                }
-            } catch (err) {
-                console.error(err);
+        setLoading(true);
+        try {
+            const response = await deleteModelService(projectId, modelId);
+            if (response.requestStatus) {
+                showSnackbar("Model deleted", "success");
+                navigate(`/projects/${projectId}`);
+            } else {
                 showSnackbar("Failed to delete model", "error");
                 setLoading(false);
             }
+        } catch (err) {
+            console.error(err);
+            showSnackbar("Failed to delete model", "error");
+            setLoading(false);
         }
     };
+
+    const openDeleteDialog = () => setDeleteDialogOpen(true);
+    const closeDeleteDialog = () => setDeleteDialogOpen(false);
 
     const handleDownload = () => {
         showSnackbar("Download functionality coming soon!", "info");
@@ -133,7 +136,7 @@ const ModelInfo = () => {
             trainLoading={trainLoading}
             error={error}
             onTrain={handleTrain}
-            onDelete={handleDelete}
+            onDelete={openDeleteDialog}
             onEdit={handleEdit}
             onDownload={handleDownload}
         />
@@ -164,6 +167,20 @@ const ModelInfo = () => {
                 onSave={handleSaveEdit}
                 model={model}
                 loading={loading}
+            />
+
+            <ConfirmDialog
+                open={deleteDialogOpen}
+                title="Delete Model"
+                message={`Are you sure you want to delete "${model?.modelName || 'this model'}"? This action cannot be undone.`}
+                confirmText="Delete"
+                cancelText="Cancel"
+                confirmColor="error"
+                onConfirm={() => {
+                    closeDeleteDialog();
+                    handleDelete();
+                }}
+                onCancel={closeDeleteDialog}
             />
         </Layout>
     );

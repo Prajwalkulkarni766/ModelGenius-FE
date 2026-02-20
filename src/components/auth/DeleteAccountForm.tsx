@@ -4,11 +4,14 @@ import { deleteAccountService } from "../../services/settingService";
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useSnackbar } from "../../hooks/useSnackbar";
+import ConfirmDialog from "../ConfirmDialog";
 
 const DeleteAccountForm = () => {
 
     const navigate = useNavigate();
     const { showSnackbar } = useSnackbar();
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [pendingPassword, setPendingPassword] = useState<string | null>(null);
 
     // Initialize react-hook-form
     const { control, handleSubmit, formState: { errors } } = useForm({
@@ -19,9 +22,14 @@ const DeleteAccountForm = () => {
 
     // Handle form submission
     const onSubmit = async (data: { password: string }) => {
+        setPendingPassword(data.password);
+        setDeleteDialogOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!pendingPassword) return;
         try {
-            // Assuming signupService handles the API call for login.
-            const deleteAccountSuccess = await deleteAccountService(data.password);
+            const deleteAccountSuccess = await deleteAccountService(pendingPassword);
 
             if (deleteAccountSuccess) {
                 navigate("/");
@@ -32,6 +40,13 @@ const DeleteAccountForm = () => {
             showSnackbar("An error occurred. Please try again later.", "error");
             console.error(error);
         }
+        setDeleteDialogOpen(false);
+        setPendingPassword(null);
+    };
+
+    const handleCancelDelete = () => {
+        setDeleteDialogOpen(false);
+        setPendingPassword(null);
     };
 
     return (
@@ -76,6 +91,17 @@ const DeleteAccountForm = () => {
             <Button type="submit" variant="contained" color="error" size="large" fullWidth>
                 Delete Account
             </Button>
+
+            <ConfirmDialog
+                open={deleteDialogOpen}
+                title="Delete Account"
+                message="This will permanently delete your account and all associated data. This action cannot be undone."
+                confirmText="Delete Account"
+                cancelText="Cancel"
+                confirmColor="error"
+                onConfirm={handleConfirmDelete}
+                onCancel={handleCancelDelete}
+            />
         </Box>
     );
 };

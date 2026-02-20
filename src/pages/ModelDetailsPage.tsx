@@ -13,6 +13,7 @@ import Dataset from '../components/model/Dataset';
 import { Typography, Box, IconButton } from '@mui/material';
 import { useSnackbar } from '../hooks/useSnackbar';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ConfirmDialog from "../components/ConfirmDialog";
 
 const ModelDetails = () => {
   const { projectId, modelId } = useParams<{ projectId: string; modelId: string }>();
@@ -23,6 +24,7 @@ const ModelDetails = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [trainLoading, setTrainLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const fetchModel = async () => {
     if (!projectId || !modelId) return;
@@ -77,6 +79,9 @@ const ModelDetails = () => {
     navigate(`/model/${modelId}/edit`);
   };
 
+  const openDeleteDialog = () => setDeleteDialogOpen(true);
+  const closeDeleteDialog = () => setDeleteDialogOpen(false);
+
   // Prepare components for tabs
   const modelDetails = (
     <ModelDetailsView
@@ -85,7 +90,7 @@ const ModelDetails = () => {
       trainLoading={trainLoading}
       error={error}
       onTrain={handleTrain}
-      onDelete={handleDelete}
+      onDelete={openDeleteDialog}
       onEdit={handleEdit}
       onDownload={() => {
         if (model?.modelPath) {
@@ -122,6 +127,20 @@ const ModelDetails = () => {
           modelName={model?.modelName || "model"}
           modelPath={model?.modelPath}
         />}
+      />
+
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        title="Delete Model"
+        message={`Are you sure you want to delete "${model?.modelName || 'this model'}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        confirmColor="error"
+        onConfirm={() => {
+          closeDeleteDialog();
+          handleDelete();
+        }}
+        onCancel={closeDeleteDialog}
       />
     </Layout>
   );

@@ -8,6 +8,8 @@ import {
 } from '@mui/material';
 import { ProjectCardProps } from '../../types/Project';
 import { Link } from 'react-router';
+import { useState } from 'react';
+import ConfirmDialog from '../ConfirmDialog';
 
 interface ProjectCardComponentProps {
     projects: ProjectCardProps[];
@@ -18,8 +20,26 @@ export default function ProjectCard({
     projects,
     onDelete,
 }: ProjectCardComponentProps) {
+    const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
     const imageBaseUrl = import.meta.env.VITE_IMAGE_BASE_URL;
+
+    const handleDeleteClick = (id: string) => {
+        setDeleteTargetId(id);
+    };
+
+    const handleConfirmDelete = () => {
+        if (deleteTargetId) {
+            onDelete(deleteTargetId);
+            setDeleteTargetId(null);
+        }
+    };
+
+    const handleCancelDelete = () => {
+        setDeleteTargetId(null);
+    };
+
+    const targetProject = projects.find(p => p._id === deleteTargetId);
 
     return (
         <>
@@ -51,7 +71,7 @@ export default function ProjectCard({
                                 <Button>Edit</Button>
                             </Link>
                             <Button
-                                onClick={() => onDelete(project._id)}
+                                onClick={() => handleDeleteClick(project._id)}
                                 color="error"
                             >
                                 Delete
@@ -69,6 +89,17 @@ export default function ProjectCard({
                     )}
                 </Card>
             ))}
+
+            <ConfirmDialog
+                open={!!deleteTargetId}
+                title="Delete Project"
+                message={`Are you sure you want to delete "${targetProject?.projectTitle || 'this project'}"? This action cannot be undone.`}
+                confirmText="Delete"
+                cancelText="Cancel"
+                confirmColor="error"
+                onConfirm={handleConfirmDelete}
+                onCancel={handleCancelDelete}
+            />
         </>
     );
 }

@@ -12,6 +12,7 @@ import Divider from '@mui/material/Divider';
 import { Dataset } from '../../types/Dataset';
 import { deleteDatasetService } from '../../services/datasetService';
 import { useSnackbar } from '../../hooks/useSnackbar';
+import ConfirmDialog from '../ConfirmDialog';
 
 interface DatasetListProps {
   projectId: string;
@@ -21,25 +22,36 @@ interface DatasetListProps {
 export default function DatasetList({ projectId, dataset = [] }: DatasetListProps) {
   const [datasets, setDatasets] = React.useState<Dataset[]>(dataset);
   const [deletingId, setDeletingId] = React.useState<string | null>(null);
+  const [deleteTargetId, setDeleteTargetId] = React.useState<string | null>(null);
   const { showSnackbar } = useSnackbar();
 
-  const handleDelete = async (datasetId: string) => {
-    // const confirm = window.confirm("Are you sure you want to delete this dataset?");
-    // if (!confirm) return;
+  const handleDeleteClick = (datasetId: string) => {
+    setDeleteTargetId(datasetId);
+  };
 
-    setDeletingId(datasetId);
+  const handleConfirmDelete = async () => {
+    if (!deleteTargetId) return;
 
-    const response = await deleteDatasetService(projectId, datasetId);
+    setDeletingId(deleteTargetId);
+
+    const response = await deleteDatasetService(projectId, deleteTargetId);
 
     if (response) {
       showSnackbar("Dataset deleted successfully!", "success");
-      setDatasets(prev => prev.filter(d => d._id !== datasetId));
+      setDatasets(prev => prev.filter(d => d._id !== deleteTargetId));
     } else {
       showSnackbar("Failed to delete dataset.", "error");
     }
 
     setDeletingId(null);
+    setDeleteTargetId(null);
   };
+
+  const handleCancelDelete = () => {
+    setDeleteTargetId(null);
+  };
+
+  const targetDataset = datasets.find(d => d._id === deleteTargetId);
 
   return (
     <Box>
@@ -53,7 +65,7 @@ export default function DatasetList({ projectId, dataset = [] }: DatasetListProp
                     <IconButton
                       edge="end"
                       aria-label="delete"
-                      onClick={() => handleDelete(data._id)}
+                      onClick={() => handleDeleteClick(data._id)}
                       disabled={deletingId === data._id}
                     >
                       <DeleteIcon />
@@ -82,6 +94,17 @@ export default function DatasetList({ projectId, dataset = [] }: DatasetListProp
           )}
         </List>
       </Grid>
+
+      <ConfirmDialog
+        open={!!deleteTargetId}
+        title="Delete Dataset"
+        message={`Are you sure you want to delete "${targetDataset?.originalFileName || 'this dataset'}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        confirmColor="error"
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+      />
     </Box>
   );
 }
