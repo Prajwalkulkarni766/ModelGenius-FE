@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import ModelDetailsView from "../components/model/Detail";
 import RetrainTab from '../components/model/RetrainTab';
-import { getModelService, deleteModelService, trainModelService } from "../services/modelService";
+import { getModelService, deleteModelService, trainModelService, updateModelService } from "../services/modelService";
 import CodeDisplay from '../components/model/CodeDisplay';
 import Layout from '../layouts/Layout';
 import ModelTabs from '../components/model/ModelTabs';
@@ -14,6 +14,7 @@ import { Typography, Box, IconButton } from '@mui/material';
 import { useSnackbar } from '../hooks/useSnackbar';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ConfirmDialog from "../components/ConfirmDialog";
+import EditModelModal from "../components/model/EditModelModal";
 
 const ModelDetails = () => {
   const { projectId, modelId } = useParams<{ projectId: string; modelId: string }>();
@@ -25,6 +26,8 @@ const ModelDetails = () => {
   const [trainLoading, setTrainLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editLoading, setEditLoading] = useState(false);
 
   const fetchModel = async () => {
     if (!projectId || !modelId) return;
@@ -76,7 +79,25 @@ const ModelDetails = () => {
   };
 
   const handleEdit = () => {
-    navigate(`/model/${modelId}/edit`);
+    setEditDialogOpen(true);
+  };
+
+  const handleSaveEdit = async (id: string, updates: any) => {
+    setEditLoading(true);
+    try {
+      if (projectId) {
+        const res = await updateModelService(projectId, id, updates);
+        if (res?.data) {
+          setModel(res.data);
+          showSnackbar("Model updated!", "success");
+        }
+      }
+    } catch {
+      showSnackbar("Update failed.", "error");
+    } finally {
+      setEditLoading(false);
+      setEditDialogOpen(false);
+    }
   };
 
   const openDeleteDialog = () => setDeleteDialogOpen(true);
@@ -141,6 +162,14 @@ const ModelDetails = () => {
           handleDelete();
         }}
         onCancel={closeDeleteDialog}
+      />
+
+      <EditModelModal
+        open={editDialogOpen}
+        onClose={() => setEditDialogOpen(false)}
+        onSave={handleSaveEdit}
+        model={model}
+        loading={editLoading}
       />
     </Layout>
   );

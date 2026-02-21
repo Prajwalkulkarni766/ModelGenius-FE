@@ -19,6 +19,27 @@ const VisuallyHiddenInput = styled('input')({
   width: 1,
 });
 
+const ALLOWED_EXTENSIONS = ['.csv', '.xlsx', '.xls'];
+const MAX_FILE_SIZE_MB = 50;
+const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+
+const validateFiles = (files: File[]): { valid: File[]; errors: string[] } => {
+  const errors: string[] = [];
+  const valid = files.filter(f => {
+    const ext = '.' + f.name.split('.').pop()?.toLowerCase();
+    if (!ALLOWED_EXTENSIONS.includes(ext)) {
+      errors.push(`"${f.name}" — unsupported type (CSV / XLSX only)`);
+      return false;
+    }
+    if (f.size > MAX_FILE_SIZE_BYTES) {
+      errors.push(`"${f.name}" — exceeds ${MAX_FILE_SIZE_MB} MB limit`);
+      return false;
+    }
+    return true;
+  });
+  return { valid, errors };
+};
+
 type UploadDataForm = {
   dataFiles: File[];
 };
@@ -36,12 +57,15 @@ const UploadDataset = ({ projectId }: UploadDatasetProps) => {
 
   const selectedFiles = watch("dataFiles");
 
-  const handleDrop = useCallback((event: React.DragEvent<HTMLDivElement>) => {
+const handleDrop = useCallback((event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     setIsDragging(false);
     const files = Array.from(event.dataTransfer.files);
-    setValue("dataFiles", files, { shouldValidate: true });
-  }, [setValue]);
+    const { valid, errors } = validateFiles(files);
+    if (errors.length) showSnackbar(errors.join('\n'), 'error');
+    if (!valid.length) return;
+    setValue("dataFiles", valid, { shouldValidate: true });
+  }, [setValue, showSnackbar]);
 
   const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -52,9 +76,12 @@ const UploadDataset = ({ projectId }: UploadDatasetProps) => {
     setIsDragging(false);
   };
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files ? Array.from(event.target.files) : [];
-    setValue("dataFiles", files, { shouldValidate: true });
+    const { valid, errors } = validateFiles(files);
+    if (errors.length) showSnackbar(errors.join('\n'), 'error');
+    if (!valid.length) return;
+    setValue("dataFiles", valid, { shouldValidate: true });
   };
 
   const onSubmit: SubmitHandler<UploadDataForm> = async (data) => {
