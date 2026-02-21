@@ -1,26 +1,33 @@
 import { Routes, Route } from "react-router";
 import { HashRouter } from "react-router-dom";
+import { Suspense, lazy } from "react";
+import { CircularProgress, Box } from "@mui/material";
 
-import Login from '../pages/Login';
-import Signup from '../pages/Signup';
-import Home from '../pages/Home';
-import NewProject from "../pages/NewProject";
-import Setting from '../pages/Setting';
-import Project from "../pages/Project";
-import Dataset from '../pages/Dataset';
-import ProjectInfo from "../pages/ProjectInfo";
-import NewModelWizard from "../pages/NewModelWizard";
-import ModelInfo from '../pages/ModelInfo';
-import ForgotPassword from '../pages/ForgotPassword';
-import ModelDetails from "../pages/ModelDetailsPage";
-import ComingSoon from "../pages/ComingSoon";
-import NotFound from "../pages/NotFound";
+const Login = lazy(() => import('../pages/Login'));
+const Signup = lazy(() => import('../pages/Signup'));
+const Home = lazy(() => import('../pages/Home'));
+const NewProject = lazy(() => import("../pages/NewProject"));
+const Setting = lazy(() => import('../pages/Setting'));
+const Project = lazy(() => import("../pages/Project"));
+const Dataset = lazy(() => import('../pages/Dataset'));
+const ProjectInfo = lazy(() => import("../pages/ProjectInfo"));
+const NewModelWizard = lazy(() => import("../pages/NewModelWizard"));
+const ModelInfo = lazy(() => import('../pages/ModelInfo'));
+const ForgotPassword = lazy(() => import('../pages/ForgotPassword'));
+const ModelDetails = lazy(() => import("../pages/ModelDetailsPage"));
+const ComingSoon = lazy(() => import("../pages/ComingSoon"));
+const NotFound = lazy(() => import("../pages/NotFound"));
 import ProtectedRoute from "../components/ProtectedRoute";
 
 const AppRouter = () => {
   return (
     <HashRouter>
-      <Routes>
+      <Suspense fallback={
+        <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
+          <CircularProgress />
+        </Box>
+      }>
+        <Routes>
         <Route path='/' element={<Login />} />
         <Route path='/signup' element={<Signup />} />
         <Route path='/forgot-password' element={<ForgotPassword />} />
@@ -45,6 +52,7 @@ const AppRouter = () => {
 
         <Route path="*" element={<NotFound />} />
       </Routes>
+      </Suspense>
     </HashRouter>
   );
 };

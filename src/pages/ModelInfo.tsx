@@ -47,8 +47,36 @@ const ModelInfo = () => {
         }
     };
 
-    useEffect(() => {
-        fetchModel();
+useEffect(() => {
+        let cancelled = false;
+
+        const load = async () => {
+            if (!projectId || !modelId) return;
+            setLoading(true);
+            try {
+                const response = await getModelService(projectId, modelId);
+                if (!cancelled) {
+                    if (response?.data) {
+                        setModel(response.data);
+                        setError(null);
+                    } else {
+                        setError("Failed to load model details.");
+                        showSnackbar("Failed to load model details.", "error");
+                    }
+                }
+            } catch (err) {
+                if (!cancelled) {
+                    console.error(err);
+                    setError("Failed to load model details.");
+                    showSnackbar("Failed to load model details.", "error");
+                }
+            } finally {
+                if (!cancelled) setLoading(false);
+            }
+        };
+
+        load();
+        return () => { cancelled = true; };
     }, [projectId, modelId]);
 
     const handleEdit = () => {

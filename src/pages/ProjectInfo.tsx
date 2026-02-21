@@ -2,7 +2,7 @@ import { Box, Typography, Button } from '@mui/material';
 import Layout from '../layouts/Layout';
 import DatasetList from '../components/dataset/DatasetList';
 import { Link, useParams } from 'react-router-dom';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { fetchProjectDetailsService } from '../services/projectService';
 import { projectStore } from "../store/projectStore";
 import { ProjectDetailsResponse } from '../types/Project';
@@ -12,27 +12,31 @@ const ProjectInfo = () => {
     const { id } = useParams();
 
     const { setProject } = projectStore();
-    const [projectDetails, setProjectDetails] = useState<ProjectDetailsResponse | null>(null);
+const [projectDetails, setProjectDetails] = useState<ProjectDetailsResponse | null>(null);
     const [projectFetchingError, setProjectFetchingError] = useState<string | null>(null);
 
-    const getProjectDetails = useCallback(async (projectId: string) => {
-        try {
-            const data = await fetchProjectDetailsService(projectId);
-            if (data) {
-                setProjectDetails(data.data);
-                setProject(data.data);
-            }
-        } catch (error) {
-            console.error(error);
-            setProjectFetchingError(String(error));
-        }
-    }, [setProject]);
-
     useEffect(() => {
-        if (id) {
-            getProjectDetails(id);
-        }
-    }, [id, getProjectDetails]);
+        if (!id) return;
+        let cancelled = false;
+
+        const load = async () => {
+            try {
+                const data = await fetchProjectDetailsService(id);
+                if (!cancelled && data) {
+                    setProjectDetails(data.data);
+                    setProject(data.data);
+                }
+            } catch (error) {
+                if (!cancelled) {
+                    console.error(error);
+                    setProjectFetchingError(String(error));
+                }
+            }
+        };
+
+        load();
+        return () => { cancelled = true; };
+    }, [id, setProject]);
 
     return (
         <Layout>
