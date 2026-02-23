@@ -5,11 +5,13 @@ import { ProjectCardProps } from '../types/Project';
 import { deleteProjectService, fetchLatestProjectsService } from '../services/projectService';
 import { useState, useEffect } from 'react';
 import { useSnackbar } from '../hooks/useSnackbar';
+import { useAsyncAction } from '../hooks/useAsyncAction';
 
 const Home = () => {
 
     const [projectData, setProjectData] = useState<ProjectCardProps[] | null>(null);
     const { showSnackbar } = useSnackbar();
+    const { execute, loading } = useAsyncAction();
 
     const getProject = async () => {
         try {
@@ -24,7 +26,7 @@ const Home = () => {
     }
 
     const deleteProject = async (projectId: string) => {
-        try {
+        await execute(async () => {
             const success: boolean = await deleteProjectService(projectId)
 
             if (success) {
@@ -33,10 +35,7 @@ const Home = () => {
             } else {
                 showSnackbar("Failed to delete project.", "error");
             }
-        } catch (error) {
-            console.error(error)
-            showSnackbar("Failed to delete project.", "error");
-        }
+        });
     }
 
     useEffect(() => {
@@ -54,7 +53,7 @@ const Home = () => {
                 <Typography variant="h5" mb={4}>
                     Recent projects
                 </Typography>
-                {projectData && <ProjectCard projects={projectData} onDelete={deleteProject} />}
+                {projectData && <ProjectCard projects={projectData} onDelete={deleteProject} loading={loading} />}
             </Box>
         </Layout>
     );

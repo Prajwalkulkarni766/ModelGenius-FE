@@ -18,13 +18,15 @@ interface ModelListProps {
 export default function ModelList({ projectId, models: initialModels }: ModelListProps) {
     const [models, setModels] = React.useState<Model[]>(initialModels);
     const [deleteTargetId, setDeleteTargetId] = React.useState<string | null>(null);
+    const deleteGuardRef = React.useRef(false);
 
     const handleDeleteClick = (modelId: string) => {
         setDeleteTargetId(modelId);
     };
 
     const handleConfirmDelete = async () => {
-        if (!deleteTargetId) return;
+        if (deleteGuardRef.current || !deleteTargetId) return;
+        deleteGuardRef.current = true;
         try {
             const { requestStatus } = await deleteModelService(projectId, deleteTargetId);
             if (requestStatus) {
@@ -34,6 +36,7 @@ export default function ModelList({ projectId, models: initialModels }: ModelLis
             console.error('Failed to delete model:', error);
         }
         setDeleteTargetId(null);
+        setTimeout(() => { deleteGuardRef.current = false; }, 300);
     };
 
     const handleCancelDelete = () => {

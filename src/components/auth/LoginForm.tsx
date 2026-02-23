@@ -8,12 +8,13 @@ import { LoginUser } from '../../types/User';
 import { userStore } from '../../store/userStore';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useSnackbar } from '../../hooks/useSnackbar';
+import { useAsyncAction } from '../../hooks/useAsyncAction';
 
 const LoginForm = () => {
     const navigate = useNavigate();
     const { setUser } = userStore();
     const [showPassword, setShowPassword] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    const { execute, loading: isLoading } = useAsyncAction();
     const { showSnackbar } = useSnackbar();
 
     const { control, handleSubmit, formState: { errors } } = useForm<LoginUser>({
@@ -24,8 +25,7 @@ const LoginForm = () => {
     });
 
     const onSubmit: SubmitHandler<LoginUser> = async (data) => {
-        setIsLoading(true);
-        try {
+        await execute(async () => {
             const { requestStatus, responseData } = await loginService(data.email, data.password);
             if (requestStatus) {
                 setUser(responseData.data.user)
@@ -33,12 +33,7 @@ const LoginForm = () => {
             } else {
                 showSnackbar("Login failed. Please check your credentials.", "error");
             }
-        } catch (error) {
-            showSnackbar("" + error, "error");
-            console.error(error);
-        } finally {
-            setIsLoading(false);
-        }
+        });
     };
 
     return (

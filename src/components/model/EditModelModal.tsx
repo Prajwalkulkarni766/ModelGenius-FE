@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -78,6 +78,7 @@ const EditModelModal: React.FC<EditModelModalProps> = ({
     encodingCategoricalMethod: "",
     normalizationTechnique: "",
   });
+  const saveGuardRef = useRef(false);
 
   useEffect(() => {
     if (model) {
@@ -97,7 +98,10 @@ const EditModelModal: React.FC<EditModelModalProps> = ({
   };
 
   const handleSave = () => {
+    if (saveGuardRef.current || loading) return;
+    saveGuardRef.current = true;
     onSave(model._id, formData);
+    setTimeout(() => { saveGuardRef.current = false; }, 300);
   };
 
   return (

@@ -7,6 +7,7 @@ import { getDatasetService, getDatasetColumnsService } from "../../services/data
 import { setModelDatasetsService, setTargetColumnService } from "../../services/modelService";
 import Layout from "../../layouts/Layout";
 import { useSnackbar } from "../../hooks/useSnackbar";
+import { useAsyncAction } from "../../hooks/useAsyncAction";
 
 type Step2Form = {
     datasetId: string;
@@ -17,6 +18,7 @@ const Step2UploadData = ({ projectId, goToNextStep, modelId }: ModelStepProps) =
     const [datasets, setDatasets] = useState<Dataset[]>([]);
     const [columns, setColumns] = useState<string[]>([]);
     const { showSnackbar } = useSnackbar();
+    const { execute, loading } = useAsyncAction();
 
     const { control, handleSubmit, watch, formState: { errors } } = useForm<Step2Form>({
         defaultValues: {
@@ -66,7 +68,7 @@ const Step2UploadData = ({ projectId, goToNextStep, modelId }: ModelStepProps) =
     }, [projectId, selectedDatasetId]);
 
     const onSubmit: SubmitHandler<Step2Form> = async (data) => {
-        try {
+        await execute(async () => {
             if (!data.datasetId) throw new Error("Dataset not selected");
             if (!data.targetColumn) throw new Error("Target column not selected");
 
@@ -79,9 +81,7 @@ const Step2UploadData = ({ projectId, goToNextStep, modelId }: ModelStepProps) =
             if (!targetResponse) throw new Error("Failed to set target column");
 
             goToNextStep();
-        } catch (err) {
-            showSnackbar(String(err), "error");
-        }
+        });
     };
 
     if (!modelId) {
@@ -136,7 +136,9 @@ const Step2UploadData = ({ projectId, goToNextStep, modelId }: ModelStepProps) =
             )}
 
             <Box display="flex" justifyContent="center" mt={4}>
-                <Button type="submit" variant="contained" size="large">Save & Next</Button>
+                <Button type="submit" variant="contained" size="large" disabled={loading}>
+                    {loading ? 'Saving...' : 'Save & Next'}
+                </Button>
             </Box>
         </Box>
     );

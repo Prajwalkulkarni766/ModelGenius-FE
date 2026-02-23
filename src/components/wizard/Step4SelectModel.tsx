@@ -3,6 +3,7 @@ import { Typography, Box, Radio, FormControlLabel, RadioGroup, FormControl, Butt
 import { ModelStepProps } from '../../types/Model';
 import { setMachineLearningModelService } from "../../services/modelService";
 import { useSnackbar } from "../../hooks/useSnackbar";
+import { useAsyncAction } from "../../hooks/useAsyncAction";
 
 type ModelSelectionForm = {
     selectedModel: string;
@@ -10,6 +11,7 @@ type ModelSelectionForm = {
 
 const Step4SelectModel = ({ projectId, goToNextStep, modelId }: ModelStepProps) => {
     const { showSnackbar } = useSnackbar();
+    const { execute, loading } = useAsyncAction();
     const {
         control,
         handleSubmit,
@@ -21,7 +23,7 @@ const Step4SelectModel = ({ projectId, goToNextStep, modelId }: ModelStepProps) 
     });
 
     const onSubmit: SubmitHandler<ModelSelectionForm> = async (data) => {
-        try {
+        await execute(async () => {
             const { requestStatus } = await setMachineLearningModelService(projectId, modelId, data.selectedModel);
 
             if (requestStatus) {
@@ -29,9 +31,7 @@ const Step4SelectModel = ({ projectId, goToNextStep, modelId }: ModelStepProps) 
             } else {
                 showSnackbar("Failed to save selected model.", "error");
             }
-        } catch (error) {
-            showSnackbar("Error during model selection submission.", "error");
-        }
+        });
     };
 
     return (
@@ -73,8 +73,8 @@ const Step4SelectModel = ({ projectId, goToNextStep, modelId }: ModelStepProps) 
             />
 
             <Box display="flex" justifyContent="center" mt={4}>
-                <Button type="submit" variant="contained" color="primary" size="large">
-                    Save & next
+                <Button type="submit" variant="contained" color="primary" size="large" disabled={loading}>
+                    {loading ? 'Saving...' : 'Save & next'}
                 </Button>
             </Box>
         </Box>

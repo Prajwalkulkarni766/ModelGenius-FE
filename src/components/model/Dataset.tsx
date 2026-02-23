@@ -22,6 +22,7 @@ import { getDatasetService, getDatasetPreviewService } from '../../services/data
 import { setModelDatasetsService } from '../../services/modelService';
 import { Dataset as DatasetType } from '../../types/Dataset';
 import { useSnackbar } from '../../hooks/useSnackbar';
+import { useAsyncAction } from '../../hooks/useAsyncAction';
 
 interface DatasetProps {
   projectId: string;
@@ -35,7 +36,7 @@ const Dataset: React.FC<DatasetProps> = ({ projectId, model, onModelUpdate }) =>
   const [previewData, setPreviewData] = useState<any[]>([]);
   const [loadingDatasets, setLoadingDatasets] = useState(false);
   const [loadingPreview, setLoadingPreview] = useState(false);
-  const [saving, setSaving] = useState(false);
+  const { execute: executeSetDataset, loading: saving } = useAsyncAction();
   const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
@@ -77,15 +78,15 @@ const Dataset: React.FC<DatasetProps> = ({ projectId, model, onModelUpdate }) =>
   const handleSetDataset = async () => {
     if (!projectId || !model?._id || !selectedDatasetId) return;
 
-    setSaving(true);
-    const res = await setModelDatasetsService(projectId, model._id, selectedDatasetId);
-    if (res && res.data) {
-      showSnackbar("Dataset assigned to model successfully!", "success");
-      if (onModelUpdate) onModelUpdate();
-    } else {
-      showSnackbar("Failed to assign dataset.", "error");
-    }
-    setSaving(false);
+    await executeSetDataset(async () => {
+      const res = await setModelDatasetsService(projectId, model._id, selectedDatasetId);
+      if (res && res.data) {
+        showSnackbar("Dataset assigned to model successfully!", "success");
+        if (onModelUpdate) onModelUpdate();
+      } else {
+        showSnackbar("Failed to assign dataset.", "error");
+      }
+    });
   };
 
   return (

@@ -8,19 +8,22 @@ import {
 } from '@mui/material';
 import { ProjectCardProps } from '../../types/Project';
 import { Link } from 'react-router';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import ConfirmDialog from '../ConfirmDialog';
 
 interface ProjectCardComponentProps {
     projects: ProjectCardProps[];
     onDelete: (id: string) => void;
+    loading?: boolean;
 }
 
 export default function ProjectCard({
     projects,
     onDelete,
+    loading = false,
 }: ProjectCardComponentProps) {
     const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+    const deleteGuardRef = useRef(false);
 
     const imageBaseUrl = import.meta.env.VITE_IMAGE_BASE_URL;
 
@@ -29,10 +32,11 @@ export default function ProjectCard({
     };
 
     const handleConfirmDelete = () => {
-        if (deleteTargetId) {
-            onDelete(deleteTargetId);
-            setDeleteTargetId(null);
-        }
+        if (deleteGuardRef.current || loading || !deleteTargetId) return;
+        deleteGuardRef.current = true;
+        onDelete(deleteTargetId);
+        setDeleteTargetId(null);
+        setTimeout(() => { deleteGuardRef.current = false; }, 300);
     };
 
     const handleCancelDelete = () => {

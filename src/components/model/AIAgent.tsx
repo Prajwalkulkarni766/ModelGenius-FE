@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Box, Typography, TextField, IconButton, Paper, CircularProgress, Avatar } from "@mui/material";
 import { Send as SendIcon, SmartToy as AIIcon, Person as PersonIcon } from "@mui/icons-material";
 import { aiChatService } from "../../services/modelService";
+import { useAsyncAction } from "../../hooks/useAsyncAction";
 
 interface Message {
   role: 'user' | 'assistant';
@@ -16,7 +17,7 @@ interface AIAgentProps {
 const AIAgent = ({ projectId, modelId }: AIAgentProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
+  const { execute, loading } = useAsyncAction();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -33,23 +34,22 @@ const AIAgent = ({ projectId, modelId }: AIAgentProps) => {
     const userMessage: Message = { role: 'user', content: input.trim() };
     setMessages(prev => [...prev, userMessage]);
     setInput("");
-    setLoading(true);
 
-    try {
-      const chatHistory = messages.map(m => ({ role: m.role, content: m.content }));
-      const result = await aiChatService(projectId, modelId, userMessage.content, chatHistory);
+    await execute(async () => {
+      try {
+        const chatHistory = messages.map(m => ({ role: m.role, content: m.content }));
+        const result = await aiChatService(projectId, modelId, userMessage.content, chatHistory);
 
-      if (result?.reply) {
-        setMessages(prev => [...prev, { role: 'assistant', content: result.reply }]);
-      } else {
-        setMessages(prev => [...prev, { role: 'assistant', content: "Sorry, I couldn't get a response. Please try again." }]);
+        if (result?.reply) {
+          setMessages(prev => [...prev, { role: 'assistant', content: result.reply }]);
+        } else {
+          setMessages(prev => [...prev, { role: 'assistant', content: "Sorry, I couldn't get a response. Please try again." }]);
+        }
+      } catch (error) {
+        console.error("AI Chat error:", error);
+        setMessages(prev => [...prev, { role: 'assistant', content: "An error occurred. Please check your API key and try again." }]);
       }
-    } catch (error) {
-      console.error("AI Chat error:", error);
-      setMessages(prev => [...prev, { role: 'assistant', content: "An error occurred. Please check your API key and try again." }]);
-    } finally {
-      setLoading(false);
-    }
+    });
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {

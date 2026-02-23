@@ -20,6 +20,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import ScienceIcon from '@mui/icons-material/Science';
 import TuneIcon from '@mui/icons-material/Tune';
 import { useSnackbar } from "../../hooks/useSnackbar";
+import { useAsyncAction } from "../../hooks/useAsyncAction";
 
 interface RetrainTabProps {
   model: any;
@@ -33,7 +34,7 @@ const RetrainTab: React.FC<RetrainTabProps> = ({ model, projectId }) => {
     encodingCategoricalMethod: "",
     normalizationTechnique: "",
   });
-  const [loading, setLoading] = useState(false);
+  const { execute, loading } = useAsyncAction();
   const [results, setResults] = useState<any>(null);
   const { showSnackbar } = useSnackbar();
 
@@ -53,9 +54,8 @@ const RetrainTab: React.FC<RetrainTabProps> = ({ model, projectId }) => {
   };
 
   const handleRetrain = async () => {
-    setLoading(true);
     setResults(null);
-    try {
+    await execute(async () => {
       const res = await trainDryRunService(projectId, model._id, formData);
       if (res && res.data) {
         setResults(res.data);
@@ -63,16 +63,11 @@ const RetrainTab: React.FC<RetrainTabProps> = ({ model, projectId }) => {
       } else {
         showSnackbar("Retraining failed. Please try again.", "error");
       }
-    } catch (err) {
-      showSnackbar("An error occurred during retraining.", "error");
-    } finally {
-      setLoading(false);
-    }
+    });
   };
 
   const handleSave = async () => {
-    setLoading(true);
-    try {
+    await execute(async () => {
       const updateRes = await updateModelService(projectId, model._id, {
         algorithm: formData.algorithm,
         handlingMissingValueStrategy: formData.handlingMissingValueStrategy,
@@ -92,13 +87,7 @@ const RetrainTab: React.FC<RetrainTabProps> = ({ model, projectId }) => {
       } else {
         throw new Error("Failed to save and train model.");
       }
-
-    } catch (err: any) {
-      console.error(err);
-      showSnackbar(err.message || "An error occurred during saving.", "error");
-    } finally {
-      setLoading(false);
-    }
+    });
   };
 
   const isClassification = results?.accuracy !== undefined;

@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import { Box, Button, Typography, CircularProgress, Paper, Alert, Stack } from "@mui/material";
 import { exportModelService, exportModelCodeService } from "../../services/modelService";
 import { useSnackbar } from "../../hooks/useSnackbar";
+import { useAsyncAction } from "../../hooks/useAsyncAction";
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import CodeIcon from '@mui/icons-material/Code';
 
@@ -13,30 +14,30 @@ interface ExportModelProps {
 }
 
 const ExportModel: React.FC<ExportModelProps> = ({ projectId, modelId, modelName, modelPath }) => {
-    const [downloadingCode, setDownloadingCode] = useState(false);
-    const [downloadingModel, setDownloadingModel] = useState(false);
+    const { execute: executeCode, loading: downloadingCode } = useAsyncAction();
+    const { execute: executeModel, loading: downloadingModel } = useAsyncAction();
     const { showSnackbar } = useSnackbar();
 
     const handleExportCode = async () => {
-        setDownloadingCode(true);
-        const success = await exportModelCodeService(projectId, modelId, modelName);
-        if (success) {
-            showSnackbar("Python code downloaded successfully!", "success");
-        } else {
-            showSnackbar("Failed to download Python code. Ensure the model has been configured.", "error");
-        }
-        setDownloadingCode(false);
+        await executeCode(async () => {
+            const success = await exportModelCodeService(projectId, modelId, modelName);
+            if (success) {
+                showSnackbar("Python code downloaded successfully!", "success");
+            } else {
+                showSnackbar("Failed to download Python code. Ensure the model has been configured.", "error");
+            }
+        });
     };
 
     const handleExportModel = async () => {
-        setDownloadingModel(true);
-        const success = await exportModelService(projectId, modelId, modelName);
-        if (success) {
-            showSnackbar("Model file downloaded successfully!", "success");
-        } else {
-            showSnackbar("Failed to download model. Ensure the model has been trained.", "error");
-        }
-        setDownloadingModel(false);
+        await executeModel(async () => {
+            const success = await exportModelService(projectId, modelId, modelName);
+            if (success) {
+                showSnackbar("Model file downloaded successfully!", "success");
+            } else {
+                showSnackbar("Failed to download model. Ensure the model has been trained.", "error");
+            }
+        });
     };
 
     return (

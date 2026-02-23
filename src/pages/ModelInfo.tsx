@@ -12,24 +12,24 @@ import ConfirmDialog from '../components/ConfirmDialog';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getModelService, updateModelService, trainModelService, deleteModelService } from '../services/modelService';
 import { useSnackbar } from '../hooks/useSnackbar';
+import { useAsyncAction } from '../hooks/useAsyncAction';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const ModelInfo = () => {
     const { projectId, modelId } = useParams<{ projectId: string; modelId: string }>();
     const navigate = useNavigate();
     const { showSnackbar } = useSnackbar();
+    const { execute: executeAction, loading } = useAsyncAction();
+    const { execute: executeTrain, loading: trainLoading } = useAsyncAction();
 
     const [model, setModel] = useState<any>(null);
-    const [loading, setLoading] = useState(false);
-    const [trainLoading, setTrainLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
     const fetchModel = async () => {
         if (!projectId || !modelId) return;
-        setLoading(true);
-        try {
+        await executeAction(async () => {
             const response = await getModelService(projectId, modelId);
             if (response && response.data) {
                 setModel(response.data);
@@ -38,13 +38,7 @@ const ModelInfo = () => {
                 setError("Failed to load model details.");
                 showSnackbar("Failed to load model details.", "error");
             }
-        } catch (err) {
-            console.error(err);
-            setError("Failed to load model details.");
-            showSnackbar("Failed to load model details.", "error");
-        } finally {
-            setLoading(false);
-        }
+        });
     };
 
 useEffect(() => {
@@ -52,8 +46,7 @@ useEffect(() => {
 
         const load = async () => {
             if (!projectId || !modelId) return;
-            setLoading(true);
-            try {
+            await executeAction(async () => {
                 const response = await getModelService(projectId, modelId);
                 if (!cancelled) {
                     if (response?.data) {
@@ -64,15 +57,7 @@ useEffect(() => {
                         showSnackbar("Failed to load model details.", "error");
                     }
                 }
-            } catch (err) {
-                if (!cancelled) {
-                    console.error(err);
-                    setError("Failed to load model details.");
-                    showSnackbar("Failed to load model details.", "error");
-                }
-            } finally {
-                if (!cancelled) setLoading(false);
-            }
+            });
         };
 
         load();
@@ -85,8 +70,7 @@ useEffect(() => {
 
     const handleSaveEdit = async (_id: string, updates: any) => {
         if (!projectId || !modelId) return;
-        setLoading(true);
-        try {
+        await executeAction(async () => {
             const response = await updateModelService(projectId, modelId, updates);
             if (response) {
                 showSnackbar("Model updated successfully", "success");
@@ -95,18 +79,12 @@ useEffect(() => {
             } else {
                 showSnackbar("Failed to update model", "error");
             }
-        } catch (err) {
-            console.error(err);
-            showSnackbar("Failed to update model", "error");
-        } finally {
-            setLoading(false);
-        }
+        });
     };
 
     const handleTrain = async () => {
         if (!projectId || !modelId) return;
-        setTrainLoading(true);
-        try {
+        await executeTrain(async () => {
             const response = await trainModelService(projectId, modelId);
             if (response) {
                 showSnackbar("Training started/completed successfully!", "success");
@@ -114,31 +92,20 @@ useEffect(() => {
             } else {
                 showSnackbar("Training failed.", "error");
             }
-        } catch (err) {
-            console.error(err);
-            showSnackbar("Training failed.", "error");
-        } finally {
-            setTrainLoading(false);
-        }
+        });
     };
 
     const handleDelete = async () => {
         if (!projectId || !modelId) return;
-        setLoading(true);
-        try {
+        await executeAction(async () => {
             const response = await deleteModelService(projectId, modelId);
             if (response.requestStatus) {
                 showSnackbar("Model deleted", "success");
                 navigate(`/projects/${projectId}`);
             } else {
                 showSnackbar("Failed to delete model", "error");
-                setLoading(false);
             }
-        } catch (err) {
-            console.error(err);
-            showSnackbar("Failed to delete model", "error");
-            setLoading(false);
-        }
+        });
     };
 
     const openDeleteDialog = () => setDeleteDialogOpen(true);

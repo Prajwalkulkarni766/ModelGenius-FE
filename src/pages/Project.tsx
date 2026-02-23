@@ -6,11 +6,13 @@ import { useEffect, useState } from 'react';
 import { fetchProjectsService } from '../services/projectService';
 import { deleteProjectService } from "../services/projectService";
 import { useSnackbar } from '../hooks/useSnackbar';
+import { useAsyncAction } from '../hooks/useAsyncAction';
 
 const Project = () => {
 
     const [projectData, setProjectData] = useState<ProjectCardProps[] | null>(null);
     const { showSnackbar } = useSnackbar();
+    const { execute, loading } = useAsyncAction();
 
     const getProjects = async () => {
         try {
@@ -26,7 +28,7 @@ const Project = () => {
     }
 
     const deleteProject = async (projectId: string) => {
-        try {
+        await execute(async () => {
             const success: boolean = await deleteProjectService(projectId)
 
             if (success) {
@@ -35,10 +37,7 @@ const Project = () => {
             } else {
                 showSnackbar("Failed to delete project.", "error");
             }
-        } catch (error) {
-            console.error(error)
-            showSnackbar("Failed to delete project.", "error");
-        }
+        });
     }
 
     useEffect(() => {
@@ -56,6 +55,7 @@ const Project = () => {
                     <ProjectCard
                         projects={projectData}
                         onDelete={deleteProject}
+                        loading={loading}
                     />
                 )}
             </Box>

@@ -12,6 +12,7 @@ import Divider from '@mui/material/Divider';
 import { Dataset } from '../../types/Dataset';
 import { deleteDatasetService } from '../../services/datasetService';
 import { useSnackbar } from '../../hooks/useSnackbar';
+import { useAsyncAction } from '../../hooks/useAsyncAction';
 import ConfirmDialog from '../ConfirmDialog';
 
 interface DatasetListProps {
@@ -21,9 +22,9 @@ interface DatasetListProps {
 
 export default function DatasetList({ projectId, dataset = [] }: DatasetListProps) {
   const [datasets, setDatasets] = React.useState<Dataset[]>(dataset);
-  const [deletingId, setDeletingId] = React.useState<string | null>(null);
   const [deleteTargetId, setDeleteTargetId] = React.useState<string | null>(null);
   const { showSnackbar } = useSnackbar();
+  const { execute, loading } = useAsyncAction();
 
   const handleDeleteClick = (datasetId: string) => {
     setDeleteTargetId(datasetId);
@@ -32,19 +33,18 @@ export default function DatasetList({ projectId, dataset = [] }: DatasetListProp
   const handleConfirmDelete = async () => {
     if (!deleteTargetId) return;
 
-    setDeletingId(deleteTargetId);
+    await execute(async () => {
+      const response = await deleteDatasetService(projectId, deleteTargetId);
 
-    const response = await deleteDatasetService(projectId, deleteTargetId);
+      if (response) {
+        showSnackbar("Dataset deleted successfully!", "success");
+        setDatasets(prev => prev.filter(d => d._id !== deleteTargetId));
+      } else {
+        showSnackbar("Failed to delete dataset.", "error");
+      }
 
-    if (response) {
-      showSnackbar("Dataset deleted successfully!", "success");
-      setDatasets(prev => prev.filter(d => d._id !== deleteTargetId));
-    } else {
-      showSnackbar("Failed to delete dataset.", "error");
-    }
-
-    setDeletingId(null);
-    setDeleteTargetId(null);
+      setDeleteTargetId(null);
+    });
   };
 
   const handleCancelDelete = () => {
@@ -66,7 +66,7 @@ export default function DatasetList({ projectId, dataset = [] }: DatasetListProp
                       edge="end"
                       aria-label="delete"
                       onClick={() => handleDeleteClick(data._id)}
-                      disabled={deletingId === data._id}
+                      disabled={loading && deleteTargetId === data._id}
                     >
                       <DeleteIcon />
                     </IconButton>

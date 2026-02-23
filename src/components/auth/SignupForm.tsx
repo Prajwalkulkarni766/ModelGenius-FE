@@ -7,12 +7,13 @@ import { useState } from 'react';
 import { SignupUser } from "../../types/User";
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useSnackbar } from '../../hooks/useSnackbar';
+import { useAsyncAction } from '../../hooks/useAsyncAction';
 
 const SignupForm = () => {
 
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    const { execute, loading: isLoading } = useAsyncAction();
     const { showSnackbar } = useSnackbar();
 
     const { control, handleSubmit, formState: { errors } } = useForm<SignupUser>({
@@ -24,8 +25,7 @@ const SignupForm = () => {
     });
 
     const onSubmit: SubmitHandler<SignupUser> = async (data) => {
-        setIsLoading(true);
-        try {
+        await execute(async () => {
             const signupSuccess = await signupService(data.username, data.email, data.password);
 
             if (signupSuccess) {
@@ -34,12 +34,7 @@ const SignupForm = () => {
             } else {
                 showSnackbar("Signup failed. Please try again.", "error");
             }
-        } catch (error) {
-            showSnackbar("An error occurred. Please try again later.", "error");
-            console.error(error);
-        } finally {
-            setIsLoading(false);
-        }
+        });
     };
 
     return (

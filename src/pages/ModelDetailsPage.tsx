@@ -12,6 +12,7 @@ import ExportModel from '../components/model/ExportModel';
 import Dataset from '../components/model/Dataset';
 import { Typography, Box, IconButton } from '@mui/material';
 import { useSnackbar } from '../hooks/useSnackbar';
+import { useAsyncAction } from '../hooks/useAsyncAction';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ConfirmDialog from "../components/ConfirmDialog";
 import EditModelModal from "../components/model/EditModelModal";
@@ -20,14 +21,13 @@ const ModelDetails = () => {
   const { projectId, modelId } = useParams<{ projectId: string; modelId: string }>();
   const navigate = useNavigate();
   const { showSnackbar } = useSnackbar();
+  const { execute: executeAction, loading } = useAsyncAction();
+  const { execute: executeTrain, loading: trainLoading } = useAsyncAction();
 
   const [model, setModel] = useState<any>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [trainLoading, setTrainLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [editLoading, setEditLoading] = useState(false);
 
   const fetchModel = async () => {
     if (!projectId || !modelId) return;
@@ -38,8 +38,6 @@ const ModelDetails = () => {
       }
     } catch (err) {
       setError("Failed to load model details");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -48,16 +46,12 @@ useEffect(() => {
 
     const load = async () => {
       if (!projectId || !modelId) return;
-      try {
+      await executeAction(async () => {
         const res = await getModelService(projectId, modelId);
         if (!cancelled && res?.data) {
           setModel(res.data);
         }
-      } catch (err) {
-        if (!cancelled) setError("Failed to load model details");
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
+      });
     };
 
     load();
@@ -65,8 +59,7 @@ useEffect(() => {
   }, [projectId, modelId]);
 
   const handleTrain = async () => {
-    setTrainLoading(true);
-    try {
+    await executeTrain(async () => {
       if (projectId && modelId) {
         const res = await trainModelService(projectId, modelId);
         if (res?.data) {
@@ -74,25 +67,17 @@ useEffect(() => {
           showSnackbar("Training completed successfully!", "success");
         }
       }
-    } catch (err) {
-      setError("Training failed");
-      showSnackbar("Training failed.", "error");
-    } finally {
-      setTrainLoading(false);
-    }
+    });
   };
 
   const handleDelete = async () => {
-    try {
+    await executeAction(async () => {
       if (projectId && modelId) {
         await deleteModelService(projectId, modelId);
         showSnackbar("Model deleted successfully!", "success");
         navigate(`/projects/${projectId}`);
       }
-    } catch (err) {
-      setError("Delete failed");
-      showSnackbar("Failed to delete model.", "error");
-    }
+    });
   };
 
   const handleEdit = () => {
@@ -100,8 +85,7 @@ useEffect(() => {
   };
 
   const handleSaveEdit = async (id: string, updates: any) => {
-    setEditLoading(true);
-    try {
+    await executeAction(async () => {
       if (projectId) {
         const res = await updateModelService(projectId, id, updates);
         if (res?.data) {
@@ -109,12 +93,8 @@ useEffect(() => {
           showSnackbar("Model updated!", "success");
         }
       }
-    } catch {
-      showSnackbar("Update failed.", "error");
-    } finally {
-      setEditLoading(false);
       setEditDialogOpen(false);
-    }
+    });
   };
 
   const openDeleteDialog = () => setDeleteDialogOpen(true);
@@ -186,7 +166,7 @@ useEffect(() => {
         onClose={() => setEditDialogOpen(false)}
         onSave={handleSaveEdit}
         model={model}
-        loading={editLoading}
+        loading={loading}
       />
     </Layout>
   );

@@ -5,11 +5,13 @@ import { useState } from "react";
 import { NewProject } from "../../types/Project";
 import ImageDropZone from "./ImageDropZone";
 import { useSnackbar } from "../../hooks/useSnackbar";
+import { useAsyncAction } from "../../hooks/useAsyncAction";
 
 const NewProjectForm = () => {
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { showSnackbar } = useSnackbar();
+  const { execute, loading } = useAsyncAction();
 
   // Initialize react-hook-form
   const { control, handleSubmit, formState: { errors }, reset } = useForm<NewProject>({
@@ -21,8 +23,7 @@ const NewProjectForm = () => {
 
   // Handle form submission
   const onSubmit: SubmitHandler<NewProject> = async (data) => {
-    try {
-
+    await execute(async () => {
       const formData = new FormData();
       formData.append('projectTitle', data.projectTitle);
       formData.append('projectDescription', data.projectDescription);
@@ -41,10 +42,7 @@ const NewProjectForm = () => {
       } else {
         showSnackbar("Failed to create project. Please try again.", "error");
       }
-    } catch (error) {
-      showSnackbar("An error occurred. Please try again later.", "error");
-      console.error(error);
-    }
+    });
   };
 
   return (
@@ -114,8 +112,8 @@ const NewProjectForm = () => {
 
         <ImageDropZone file={selectedFile} onFileSelect={setSelectedFile} />
 
-        <Button sx={{ mt: 2, alignSelf: 'flex-start' }} type="submit" variant="contained" color="primary" size="large" >
-          Create
+        <Button sx={{ mt: 2, alignSelf: 'flex-start' }} type="submit" variant="contained" color="primary" size="large" disabled={loading}>
+          {loading ? 'Creating...' : 'Create'}
         </Button>
       </Box>
     </>

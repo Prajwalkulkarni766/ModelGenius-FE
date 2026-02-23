@@ -6,6 +6,7 @@ import {
   DialogActions,
   Button,
 } from '@mui/material';
+import { useRef } from 'react';
 
 export interface ConfirmDialogProps {
   open: boolean;
@@ -30,6 +31,15 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   onConfirm,
   onCancel,
 }) => {
+  const confirmGuardRef = useRef(false);
+
+  const handleConfirm = () => {
+    if (confirmGuardRef.current || loading) return;
+    confirmGuardRef.current = true;
+    onConfirm();
+    setTimeout(() => { confirmGuardRef.current = false; }, 300);
+  };
+
   return (
     <Dialog open={open} onClose={onCancel} maxWidth="xs" fullWidth>
       <DialogTitle>{title}</DialogTitle>
@@ -41,7 +51,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
           {cancelText}
         </Button>
         <Button
-          onClick={onConfirm}
+          onClick={handleConfirm}
           color={confirmColor}
           variant="contained"
           disabled={loading}

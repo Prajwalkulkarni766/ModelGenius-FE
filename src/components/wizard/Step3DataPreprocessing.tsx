@@ -3,6 +3,7 @@ import { Typography, Box, FormControl, InputLabel, Select, MenuItem, Button } fr
 import { ModelStepProps } from '../../types/Model';
 import { settingDataCleaningMethodService } from "../../services/modelService";
 import { useSnackbar } from "../../hooks/useSnackbar";
+import { useAsyncAction } from "../../hooks/useAsyncAction";
 
 type PreprocessingFormValues = {
     handlingMissingValueStrategy: string;
@@ -12,6 +13,7 @@ type PreprocessingFormValues = {
 
 const Step3DataPreprocessing = ({ projectId, goToNextStep, modelId }: ModelStepProps) => {
     const { showSnackbar } = useSnackbar();
+    const { execute, loading } = useAsyncAction();
     const {
         control,
         handleSubmit,
@@ -25,7 +27,7 @@ const Step3DataPreprocessing = ({ projectId, goToNextStep, modelId }: ModelStepP
     });
 
     const onSubmit: SubmitHandler<PreprocessingFormValues> = async (data) => {
-        try {
+        await execute(async () => {
             const response = await settingDataCleaningMethodService(projectId, modelId, data.handlingMissingValueStrategy, data.encodingCategoricalMethod, data.normalizationTechnique);
 
             if (response) {
@@ -33,9 +35,7 @@ const Step3DataPreprocessing = ({ projectId, goToNextStep, modelId }: ModelStepP
             } else {
                 showSnackbar("Failed to save preprocessing settings.", "error");
             }
-        } catch (error) {
-            showSnackbar("Error during preprocessing submission.", "error");
-        }
+        });
     };
 
     return (
@@ -120,8 +120,8 @@ const Step3DataPreprocessing = ({ projectId, goToNextStep, modelId }: ModelStepP
 
             {/* Submit */}
             <Box display="flex" justifyContent="center" mt={4}>
-                <Button type="submit" variant="contained" color="primary" size="large">
-                    Save & next
+                <Button type="submit" variant="contained" color="primary" size="large" disabled={loading}>
+                    {loading ? 'Saving...' : 'Save & next'}
                 </Button>
             </Box>
         </Box>

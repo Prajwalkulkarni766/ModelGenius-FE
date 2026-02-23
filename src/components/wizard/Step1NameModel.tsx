@@ -1,15 +1,16 @@
 import { Typography, Box, TextField, Button } from "@mui/material";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
-import { useState } from 'react';
 import { BaseModelStepProps, ModelName } from '../../types/Model';
 import { createNewModel } from "../../services/modelService";
 import { modelStore } from "../../store/modelStore";
 import { useSnackbar } from "../../hooks/useSnackbar";
+import { useAsyncAction } from "../../hooks/useAsyncAction";
 
 const Step1NameModel = ({ projectId, goToNextStep }: BaseModelStepProps) => {
 
     const { setModel } = modelStore();
     const { showSnackbar } = useSnackbar();
+    const { execute, loading } = useAsyncAction();
 
     const { control, handleSubmit, formState: { errors } } = useForm<ModelName>({
         defaultValues: {
@@ -18,7 +19,7 @@ const Step1NameModel = ({ projectId, goToNextStep }: BaseModelStepProps) => {
     });
 
     const onSubmit: SubmitHandler<ModelName> = async (data) => {
-        try {
+        await execute(async () => {
             const response = await createNewModel(projectId, data.modelName);
 
             if (response) {
@@ -28,10 +29,7 @@ const Step1NameModel = ({ projectId, goToNextStep }: BaseModelStepProps) => {
             else {
                 showSnackbar("Failed to create model. Please try again.", "error");
             }
-        } catch (error) {
-            showSnackbar("An error occurred. Please try again.", "error");
-            console.error(error);
-        }
+        });
     };
 
     return (
@@ -64,8 +62,8 @@ const Step1NameModel = ({ projectId, goToNextStep }: BaseModelStepProps) => {
             />
 
             <Box display={"flex"} mt={2} mx={10} gap={3} justifyContent={'center'} alignItems={'center'}>
-                <Button type="submit" variant="contained" color="primary" size="large">
-                    Save & next
+                <Button type="submit" variant="contained" color="primary" size="large" disabled={loading}>
+                    {loading ? 'Saving...' : 'Save & next'}
                 </Button>
             </Box>
         </Box >
