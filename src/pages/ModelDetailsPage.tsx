@@ -1,5 +1,5 @@
 // src/pages/ModelDetails.tsx
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import ModelDetailsView from "../components/model/Detail";
 import RetrainTab from '../components/model/RetrainTab';
@@ -29,7 +29,7 @@ const ModelDetails = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
 
-  const fetchModel = async () => {
+  const fetchModel = useCallback(async () => {
     if (!projectId || !modelId) return;
     try {
       const res = await getModelService(projectId, modelId);
@@ -39,7 +39,7 @@ const ModelDetails = () => {
     } catch (err) {
       setError("Failed to load model details");
     }
-  };
+  }, [projectId, modelId]);
 
 useEffect(() => {
     let cancelled = false;
@@ -56,7 +56,7 @@ useEffect(() => {
 
     load();
     return () => { cancelled = true; };
-  }, [projectId, modelId]);
+  }, [projectId, modelId, executeAction]);
 
   const handleTrain = async () => {
     await executeTrain(async () => {
@@ -134,12 +134,12 @@ useEffect(() => {
       </Box>
 
       <ModelTabs
-        modelInfo={modelDetails}
-        retrainTab={retrainTab}
-        dataset={<Dataset projectId={projectId || ""} model={model} onModelUpdate={fetchModel} />}
-        code={codeDisplay}
-        AIAgent={<AIAgent projectId={projectId || ""} modelId={modelId || ""} />}
-        exportModel={<ExportModel
+        modelInfo={() => modelDetails}
+        retrainTab={() => retrainTab}
+        dataset={() => <Dataset projectId={projectId || ""} model={model} onModelUpdate={fetchModel} />}
+        code={() => codeDisplay}
+        AIAgent={() => <AIAgent projectId={projectId || ""} modelId={modelId || ""} />}
+        exportModel={() => <ExportModel
           projectId={projectId || ""}
           modelId={modelId || ""}
           modelName={model?.modelName || "model"}

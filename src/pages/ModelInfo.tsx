@@ -149,11 +149,11 @@ useEffect(() => {
             </Box>
 
             <ModelTabs
-                modelInfo={modelDetails}
-                dataset={<Dataset projectId={projectId || ""} model={model} onModelUpdate={fetchModel} />}
-                code={codeDisplay}
-                AIAgent={<AIAgent projectId={projectId || ""} modelId={modelId || ""} />}
-                exportModel={<ExportModel projectId={projectId || ""} modelId={modelId || ""} modelName={model?.modelName || ""} modelPath={model?.modelPath} />}
+                modelInfo={() => modelDetails}
+                dataset={() => <Dataset projectId={projectId || ""} model={model} onModelUpdate={fetchModel} />}
+                code={() => codeDisplay}
+                AIAgent={() => <AIAgent projectId={projectId || ""} modelId={modelId || ""} />}
+                exportModel={() => <ExportModel projectId={projectId || ""} modelId={modelId || ""} modelName={model?.modelName || ""} modelPath={model?.modelPath} />}
             />
 
             <EditModelModal

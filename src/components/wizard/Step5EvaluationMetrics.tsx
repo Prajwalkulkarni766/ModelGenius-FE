@@ -47,7 +47,7 @@ const Step5EvaluationMetrics = ({ projectId, modelId, goToNextStep }: ModelStepP
         };
 
         trainModel();
-    }, [projectId, modelId]);
+    }, [projectId, modelId, showSnackbar]);
 
     return (
         <Box mt={5} sx={{ display: "flex", flexDirection: "column" }} gap={2}>

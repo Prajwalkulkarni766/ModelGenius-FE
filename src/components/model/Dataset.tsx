@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   Box,
   Typography,
@@ -39,9 +39,19 @@ const Dataset: React.FC<DatasetProps> = ({ projectId, model, onModelUpdate }) =>
   const { execute: executeSetDataset, loading: saving } = useAsyncAction();
   const { showSnackbar } = useSnackbar();
 
+  const fetchDatasets = useCallback(async () => {
+    if (!projectId) return;
+    setLoadingDatasets(true);
+    const res = await getDatasetService(projectId);
+    if (res && res.data) {
+      setDatasets(res.data);
+    }
+    setLoadingDatasets(false);
+  }, [projectId]);
+
   useEffect(() => {
     fetchDatasets();
-  }, [projectId]);
+  }, [fetchDatasets]);
 
   useEffect(() => {
     // If model has a dataset, select it by default if available
@@ -51,16 +61,6 @@ const Dataset: React.FC<DatasetProps> = ({ projectId, model, onModelUpdate }) =>
     // If we want to auto-select, we need to match name or fetch full model details if not present.
     // For now, let's just let user select.
   }, [model]);
-
-  const fetchDatasets = async () => {
-    if (!projectId) return;
-    setLoadingDatasets(true);
-    const res = await getDatasetService(projectId);
-    if (res && res.data) {
-      setDatasets(res.data);
-    }
-    setLoadingDatasets(false);
-  };
 
   const handleSelectDataset = async (id: string) => {
     setSelectedDatasetId(id);

@@ -191,7 +191,7 @@ const AIAgent = ({ projectId, modelId }: AIAgentProps) => {
           placeholder="Type your message..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyPress={handleKeyPress}
+          onKeyDown={handleKeyPress}
           disabled={loading}
           multiline
           maxRows={4}

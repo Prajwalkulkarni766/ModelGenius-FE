@@ -2,7 +2,6 @@ import * as React from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
-import { ReactNode } from 'react';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import StorageOutlinedIcon from '@mui/icons-material/StorageOutlined';
@@ -56,18 +55,23 @@ export default function ModelTabs({
   code,
   retrainTab,
 }: {
-  modelInfo: ReactNode;
-  AIAgent: ReactNode;
-  exportModel: ReactNode;
-  dataset: ReactNode;
-  code: ReactNode;
-  retrainTab?: ReactNode;
+  modelInfo: () => React.ReactNode;
+  AIAgent: () => React.ReactNode;
+  exportModel: () => React.ReactNode;
+  dataset: () => React.ReactNode;
+  code: () => React.ReactNode;
+  retrainTab?: () => React.ReactNode;
 }) {
   const [value, setValue] = React.useState(0);
+  const [visitedTabs, setVisitedTabs] = React.useState<Set<number>>(new Set([0]));
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     event.preventDefault();
     setValue(newValue);
+    setVisitedTabs(prev => {
+      if (prev.has(newValue)) return prev;
+      return new Set(prev).add(newValue);
+    });
   };
 
   return (
@@ -123,22 +127,22 @@ export default function ModelTabs({
 
       <Box sx={{ width: '100%', p: 3, overflow: 'auto' }}>
         <CustomTabPanel value={value} index={0}>
-          {modelInfo}
+          {visitedTabs.has(0) && modelInfo()}
         </CustomTabPanel>
         <CustomTabPanel value={value} index={1}>
-          {retrainTab}
+          {visitedTabs.has(1) && retrainTab?.()}
         </CustomTabPanel>
         <CustomTabPanel value={value} index={2}>
-          {dataset}
+          {visitedTabs.has(2) && dataset()}
         </CustomTabPanel>
         <CustomTabPanel value={value} index={3}>
-          {code}
+          {visitedTabs.has(3) && code()}
         </CustomTabPanel>
         <CustomTabPanel value={value} index={4}>
-          {AIAgent}
+          {visitedTabs.has(4) && AIAgent()}
         </CustomTabPanel>
         <CustomTabPanel value={value} index={5}>
-          {exportModel}
+          {visitedTabs.has(5) && exportModel()}
         </CustomTabPanel>
       </Box>
     </Box>
