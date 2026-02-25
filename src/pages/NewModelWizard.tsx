@@ -1,7 +1,6 @@
 import { Typography } from "@mui/material";
 import Layout from "../layouts/Layout";
 import ProgressBar from "../components/wizard/ProgressBar";
-import { useState } from "react";
 import { modelStore } from "../store/modelStore";
 import { useParams } from "react-router-dom";
 
@@ -32,11 +31,9 @@ const NewModelWizard = () => {
         "step6",
     ];
 
-    const [currentStep, setCurrentStep] = useState<Step>("step1");
-
-    const { model } = modelStore();
+    const { model, currentStep, setCurrentStep } = modelStore();
     const modelId = model?._id || '';
-    const currentIndex = steps.indexOf(currentStep);
+    const currentIndex = steps.indexOf(currentStep as Step);
 
     const goToNextStep = () => {
         const nextStep = steps[currentIndex + 1];
