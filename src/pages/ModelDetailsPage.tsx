@@ -10,12 +10,13 @@ import ModelTabs from '../components/model/ModelTabs';
 import AIAgent from '../components/model/AIAgent';
 import ExportModel from '../components/model/ExportModel';
 import Dataset from '../components/model/Dataset';
-import { Typography, Box, IconButton } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
 import { useSnackbar } from '../hooks/useSnackbar';
 import { useAsyncAction } from '../hooks/useAsyncAction';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ConfirmDialog from "../components/ConfirmDialog";
 import EditModelModal from "../components/model/EditModelModal";
+import EditableText from "../components/EditableText";
 
 const ModelDetails = () => {
   const { projectId, modelId } = useParams<{ projectId: string; modelId: string }>();
@@ -126,7 +127,18 @@ const ModelDetails = () => {
         <IconButton component={Link} to={`/projects/${projectId}`}>
           <ArrowBackIcon />
         </IconButton>
-        <Typography variant="h4">{model?.modelName || "Model Info"}</Typography>
+        {model && (
+          <EditableText
+            value={model.modelName || ""}
+            onSave={async (newName) => {
+              if (projectId && modelId) {
+                await updateModelService(projectId, modelId, { modelName: newName });
+                fetchModel();
+              }
+            }}
+            variant="h4"
+          />
+        )}
       </Box>
 
       <ModelTabs

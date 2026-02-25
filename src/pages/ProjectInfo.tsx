@@ -3,17 +3,41 @@ import Layout from '../layouts/Layout';
 import DatasetList from '../components/dataset/DatasetList';
 import { Link, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { fetchProjectDetailsService } from '../services/projectService';
+import { fetchProjectDetailsService, updateProjectService } from '../services/projectService';
 import { projectStore } from "../store/projectStore";
 import { ProjectDetailsResponse } from '../types/Project';
 import ModelList from '../components/wizard/ModelList';
+import EditableText from '../components/EditableText';
 
 const ProjectInfo = () => {
     const { id } = useParams();
 
     const { setProject } = projectStore();
-const [projectDetails, setProjectDetails] = useState<ProjectDetailsResponse | null>(null);
+    const [projectDetails, setProjectDetails] = useState<ProjectDetailsResponse | null>(null);
     const [projectFetchingError, setProjectFetchingError] = useState<string | null>(null);
+
+    const refreshProject = async () => {
+        if (!id) return;
+        try {
+            const data = await fetchProjectDetailsService(id);
+            if (data) {
+                setProjectDetails(data.data);
+                setProject(data.data);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const handleUpdateTitle = async (newTitle: string) => {
+        await updateProjectService(id!, { projectTitle: newTitle });
+        await refreshProject();
+    };
+
+    const handleUpdateDescription = async (newDescription: string) => {
+        await updateProjectService(id!, { projectDescription: newDescription });
+        await refreshProject();
+    };
 
     useEffect(() => {
         if (!id) return;
@@ -48,13 +72,20 @@ const [projectDetails, setProjectDetails] = useState<ProjectDetailsResponse | nu
 
             {projectDetails && (
                 <>
-                    <Typography variant="h4">
-                        Title: {projectDetails.projectDetails.projectTitle}
-                    </Typography>
+                    <EditableText
+                        value={projectDetails.projectDetails.projectTitle}
+                        onSave={handleUpdateTitle}
+                        variant="h4"
+                    />
 
-                    <Typography component="p" mt={2}>
-                        Description: {projectDetails.projectDetails.projectDescription}
-                    </Typography>
+                    <Box mt={2}>
+                        <EditableText
+                            value={projectDetails.projectDetails.projectDescription}
+                            onSave={handleUpdateDescription}
+                            variant="body1"
+                            multiline
+                        />
+                    </Box>
 
                     <Box mt={5} display="flex" justifyContent="space-between">
                         <Typography variant="h6">Models</Typography>

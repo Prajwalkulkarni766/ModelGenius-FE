@@ -56,6 +56,22 @@ export const deleteProjectService = async (projectId: string): Promise<boolean> 
   }
 };
 
+export const updateProjectService = async (
+  projectId: string,
+  updates: { projectTitle?: string; projectDescription?: string }
+): Promise<ApiResponse<ProjectDetailsResponse> | null> => {
+  try {
+    const response = await apiClient.patch<ApiResponse<ProjectDetailsResponse>>(
+      `${API_PATH}/${projectId}`,
+      updates
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Failed to update project:", error);
+    return null;
+  }
+};
+
 export const fetchProjectsService = async (): Promise<ApiResponse<ProjectCardProps[]> | null> => {
   try {
     const response = await apiClient.get<ApiResponse<ProjectCardProps[]>>(`${API_PATH}/projects`);

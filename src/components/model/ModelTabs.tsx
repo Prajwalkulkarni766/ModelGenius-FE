@@ -75,57 +75,36 @@ export default function ModelTabs({
   };
 
   return (
-    <Box sx={{ flexGrow: 1, bgcolor: 'background.paper', display: 'flex', height: '100%' }}>
-      <Tabs
-        orientation="vertical"
-        variant="scrollable"
-        value={value}
-        onChange={handleChange}
-        aria-label="Model detail tabs"
-        sx={{
-          borderRight: 1,
-          borderColor: 'divider',
-          minWidth: 220,
-          height: 'calc(100vh - 100px)',
-          position: 'sticky',
-          top: '100px',
-          bgcolor: 'background.paper',
-          zIndex: 5,
-          '& .MuiTab-root': {
-            textTransform: 'none',
-            fontWeight: 500,
-            fontSize: '0.95rem',
-            minHeight: 56,
-            justifyContent: 'flex-start',
-            px: 3,
-            transition: 'all 0.2s ease-in-out',
-            '&:hover': {
-              bgcolor: 'action.hover',
+    <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs
+          variant="scrollable"
+          scrollButtons="auto"
+          value={value}
+          onChange={handleChange}
+          aria-label="Model detail tabs"
+          sx={{
+            '& .MuiTab-root': {
+              textTransform: 'none',
+              fontWeight: 500,
+              fontSize: '0.9rem',
+              minHeight: 48,
             },
-          },
-          '& .Mui-selected': {
-            bgcolor: 'action.selected',
-            fontWeight: 600,
-          },
-          '& .MuiTabs-indicator': {
-            width: 4,
-            borderRadius: '0 4px 4px 0',
-          },
-        }}
-      >
-        {tabItems.map((item, index) => (
-          <Tab
-            key={item.label}
-            icon={item.icon}
-            iconPosition="start"
-            label={item.label}
-            {...a11yProps(index)}
-            sx={{ gap: 1.5 }}
-          />
-        ))}
-      </Tabs>
-
-      <Box sx={{ width: '100%', p: 3, overflow: 'auto' }}>
+          }}
+        >
+          {tabItems.map((item, index) => (
+            <Tab
+              key={item.label}
+              icon={item.icon}
+              iconPosition="start"
+              label={item.label}
+              {...a11yProps(index)}
+              sx={{ gap: 1 }}
+            />
+          ))}
+        </Tabs>
+      </Box>
+      <Box sx={{ p: 3 }}>
         <CustomTabPanel value={value} index={0}>
           {visitedTabs.has(0) && modelInfo()}
         </CustomTabPanel>
