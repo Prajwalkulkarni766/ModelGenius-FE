@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import {
   Box,
   Typography,
@@ -38,6 +39,17 @@ const Dataset: React.FC<DatasetProps> = ({ projectId, model, onModelUpdate }) =>
   const [loadingPreview, setLoadingPreview] = useState(false);
   const { execute: executeSetDataset, loading: saving } = useAsyncAction();
   const { showSnackbar } = useSnackbar();
+  const parentRef = useRef<HTMLDivElement>(null);
+
+  const columnKeys = previewData.length > 0 ? Object.keys(previewData[0]) : [];
+
+  const rowVirtualizer = useVirtualizer({
+    count: columnKeys.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 150,
+    horizontal: true,
+    overscan: 2,
+  });
 
   const fetchDatasets = useCallback(async () => {
     if (!projectId) return;
@@ -143,20 +155,44 @@ const Dataset: React.FC<DatasetProps> = ({ projectId, model, onModelUpdate }) =>
             </Box>
           ) : previewData.length > 0 ? (
             <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-              <TableContainer sx={{ maxHeight: '65vh' }}>
-                <Table stickyHeader size="small">
-                  <TableHead>
-                    <TableRow>
-                      {Object.keys(previewData[0]).map((key) => (
-                        <TableCell key={key} sx={{ fontWeight: 'bold' }}>{key}</TableCell>
+              <TableContainer component="div" ref={parentRef} sx={{ maxHeight: '65vh', overflow: 'auto' }}>
+                <Table stickyHeader size="small" component="div">
+                  <TableHead component="div">
+                    <TableRow component="div" sx={{ display: 'flex', position: 'relative' }}>
+                      {rowVirtualizer.getVirtualItems().map((virtualColumn) => (
+                        <TableCell
+                          key={columnKeys[virtualColumn.index]}
+                          component="div"
+                          sx={{
+                            fontWeight: 'bold',
+                            width: 150,
+                            position: 'absolute',
+                            left: virtualColumn.start,
+                            borderBottom: 0,
+                          }}
+                        >
+                          {columnKeys[virtualColumn.index]}
+                        </TableCell>
                       ))}
                     </TableRow>
                   </TableHead>
-                  <TableBody>
+                  <TableBody component="div">
                     {previewData.map((row, idx) => (
-                      <TableRow key={idx} hover>
-                        {Object.values(row).map((val: any, i) => (
-                          <TableCell key={i}>{String(val)}</TableCell>
+                      <TableRow key={idx} component="div" sx={{ display: 'flex', position: 'relative', height: 40 }}>
+                        {rowVirtualizer.getVirtualItems().map((virtualColumn) => (
+                          <TableCell
+                            key={virtualColumn.index}
+                            component="div"
+                            sx={{
+                              width: 150,
+                              position: 'absolute',
+                              left: virtualColumn.start,
+                              height: 40,
+                              py: 0,
+                            }}
+                          >
+                            {String(Object.values(row)[virtualColumn.index])}
+                          </TableCell>
                         ))}
                       </TableRow>
                     ))}

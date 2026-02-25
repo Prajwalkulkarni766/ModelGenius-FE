@@ -26,6 +26,7 @@ const ModelDetails = () => {
 
   const [model, setModel] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
 
@@ -41,22 +42,31 @@ const ModelDetails = () => {
     }
   }, [projectId, modelId]);
 
-useEffect(() => {
+  useEffect(() => {
     let cancelled = false;
 
     const load = async () => {
       if (!projectId || !modelId) return;
-      await executeAction(async () => {
+      setInitialLoading(true);
+      try {
         const res = await getModelService(projectId, modelId);
         if (!cancelled && res?.data) {
           setModel(res.data);
         }
-      });
+      } catch (err) {
+        if (!cancelled) {
+          setError("Failed to load model details");
+        }
+      } finally {
+        if (!cancelled) {
+          setInitialLoading(false);
+        }
+      }
     };
 
     load();
     return () => { cancelled = true; };
-  }, [projectId, modelId, executeAction]);
+  }, [projectId, modelId]);
 
   const handleTrain = async () => {
     await executeTrain(async () => {
@@ -104,7 +114,7 @@ useEffect(() => {
   const modelDetails = (
     <ModelDetailsView
       model={model || {}}
-      loading={loading}
+      loading={initialLoading}
       trainLoading={trainLoading}
       error={error}
       onTrain={handleTrain}
@@ -127,10 +137,10 @@ useEffect(() => {
   return (
     <Layout>
       <Box display="flex" alignItems="center" gap={1} pl={2} sx={{ position: 'sticky', top: 0, bgcolor: 'background.default', zIndex: 10, py: 2, mb: 0 }}>
-          <IconButton component={Link} to={`/projects/${projectId}`}>
-              <ArrowBackIcon />
-          </IconButton>
-          <Typography variant="h4">{model?.modelName || "Model Info"}</Typography>
+        <IconButton component={Link} to={`/projects/${projectId}`}>
+          <ArrowBackIcon />
+        </IconButton>
+        <Typography variant="h4">{model?.modelName || "Model Info"}</Typography>
       </Box>
 
       <ModelTabs
