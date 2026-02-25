@@ -18,6 +18,14 @@ const CodeDisplay: React.FC<CodeDisplayProps> = ({ model }) => {
   const [copied, setCopied] = useState(false);
   const { showSnackbar } = useSnackbar();
 
+  const codeKey = [
+    model?.algorithm,
+    model?.encodingCategoricalMethod,
+    model?.normalizationTechnique,
+    model?.handlingMissingValueStrategy,
+    model?.targetColumn,
+  ].join("|");
+
   useEffect(() => {
     const fetchCode = async () => {
       if (!projectId || !modelId) {
@@ -37,7 +45,7 @@ const CodeDisplay: React.FC<CodeDisplayProps> = ({ model }) => {
     };
 
     fetchCode();
-  }, [projectId, modelId, model]);
+  }, [projectId, modelId, codeKey, showSnackbar]);
 
   const handleCopy = async () => {
     if (codeString) {

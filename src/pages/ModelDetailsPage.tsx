@@ -39,34 +39,20 @@ const ModelDetails = () => {
       }
     } catch (err) {
       setError("Failed to load model details");
+    } finally {
+      setInitialLoading(false);
     }
   }, [projectId, modelId]);
 
   useEffect(() => {
-    let cancelled = false;
-
     const load = async () => {
       if (!projectId || !modelId) return;
       setInitialLoading(true);
-      try {
-        const res = await getModelService(projectId, modelId);
-        if (!cancelled && res?.data) {
-          setModel(res.data);
-        }
-      } catch (err) {
-        if (!cancelled) {
-          setError("Failed to load model details");
-        }
-      } finally {
-        if (!cancelled) {
-          setInitialLoading(false);
-        }
-      }
+      await fetchModel();
     };
 
     load();
-    return () => { cancelled = true; };
-  }, [projectId, modelId]);
+  }, [fetchModel]);
 
   const handleTrain = async () => {
     await executeTrain(async () => {

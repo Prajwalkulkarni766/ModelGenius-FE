@@ -1,6 +1,7 @@
 import apiClient from "../lib/apiClient";
 import { Model } from "../types/Model";
 import { ApiResponse } from "../types/ApiResponse";
+import { deduplicatedFetch } from "../utils/deduplicatedFetch";
 
 const API_PATH = "/api/v1/models";
 
@@ -212,12 +213,12 @@ export const getModelService = async (
   projectId: string,
   modelId: string
 ): Promise<ApiResponse<Model> | null> => {
+  const url = `${API_PATH}/${projectId}/models/${modelId}`;
   try {
-    const response = await apiClient.get<ApiResponse<Model>>(
-      `${API_PATH}/${projectId}/models/${modelId}`
-    );
-
-    return response.data;
+    return await deduplicatedFetch(url, async () => {
+      const response = await apiClient.get<ApiResponse<Model>>(url);
+      return response.data;
+    });
   } catch (error) {
     console.error("Failed to get model:", error);
     return null;
@@ -322,15 +323,14 @@ export const getModelCodeService = async (
   projectId: string,
   modelId: string
 ): Promise<string | null> => {
+  const url = `${API_PATH}/${projectId}/models/${modelId}/export-code`;
   try {
-    const response = await apiClient.get(
-      `${API_PATH}/${projectId}/models/${modelId}/export-code`,
-      {
+    return await deduplicatedFetch(url, async () => {
+      const response = await apiClient.get(url, {
         responseType: 'text'
-      }
-    );
-
-    return response.data;
+      });
+      return response.data;
+    });
   } catch (error) {
     console.error("Failed to get model code:", error);
     return null;
