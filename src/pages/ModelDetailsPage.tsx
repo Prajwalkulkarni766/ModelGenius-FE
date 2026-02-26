@@ -60,7 +60,7 @@ const ModelDetails = () => {
       if (projectId && modelId) {
         const res = await trainModelService(projectId, modelId);
         if (res?.data) {
-          setModel({ ...model, metrics: res.data });
+          setModel(prev => ({ ...prev, metrics: res.data }));
           showSnackbar("Training completed successfully!", "success");
         }
       }

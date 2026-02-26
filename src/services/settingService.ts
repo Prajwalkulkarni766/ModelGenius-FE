@@ -19,7 +19,7 @@ export const deleteAccountService = async (
     return response.status === 200 || response.status === 204;
   } catch (error) {
     console.error("Delete account failed:", error);
-    return false;
+    throw error;
   }
 };
 
@@ -31,7 +31,7 @@ export const getProfileService = async (): Promise<ApiResponse<UpdateProfileUser
     return response.data;
   } catch (error) {
     console.error("Failed to fetch profile:", error);
-    return null;
+    throw error;
   }
 };
 
@@ -45,6 +45,6 @@ export const updateProfileService = async (
     return response.status === 200;
   } catch (error) {
     console.error("Failed to update profile:", error);
-    return false;
+    throw error;
   }
 };

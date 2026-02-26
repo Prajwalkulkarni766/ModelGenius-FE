@@ -10,6 +10,7 @@ import { useAsyncAction } from '../hooks/useAsyncAction';
 const Home = () => {
 
     const [projectData, setProjectData] = useState<ProjectCardProps[] | null>(null);
+    const [error, setError] = useState<string | null>(null);
     const { showSnackbar } = useSnackbar();
     const { execute, loading } = useAsyncAction();
 
@@ -22,6 +23,8 @@ const Home = () => {
             }
         } catch (error) {
             console.error(error);
+            setError("Failed to load projects. Please try again.");
+            showSnackbar("Failed to load projects. Please try again.", "error");
         }
     }
 
@@ -48,6 +51,12 @@ const Home = () => {
             <Typography component="p" mt={2}>
                 Easily upload, clean, and train machine learning models in minutes.
             </Typography>
+
+            {error && (
+                <Typography color="error" mt={2}>
+                    {error}
+                </Typography>
+            )}
 
             <Box mt={7}>
                 <Typography variant="h5" mb={4}>

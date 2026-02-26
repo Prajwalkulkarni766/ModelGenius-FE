@@ -14,7 +14,7 @@ export const newProjectService = async (
     return response.status === 200 || response.status === 201;
   } catch (error) {
     console.error("New project creation failed:", error);
-    return false;
+    throw error;
   }
 };
 
@@ -29,7 +29,7 @@ export const fetchProjectDetailsService = async (
     return response.data;
   } catch (error) {
     console.error("Failed to fetch project details:", error);
-    return null;
+    throw error;
   }
 };
 
@@ -41,7 +41,7 @@ export const fetchLatestProjectsService = async (): Promise<ApiResponse<ProjectC
     return response.data;
   } catch (error) {
     console.error("Failed to fetch latest projects:", error);
-    return null;
+    throw error;
   }
 };
 
@@ -52,7 +52,7 @@ export const deleteProjectService = async (projectId: string): Promise<boolean> 
     return response.status === 200 || response.status === 204;
   } catch (error) {
     console.error("Failed to delete project:", error);
-    return false;
+    throw error;
   }
 };
 
@@ -68,7 +68,7 @@ export const updateProjectService = async (
     return response.data;
   } catch (error) {
     console.error("Failed to update project:", error);
-    return null;
+    throw error;
   }
 };
 
@@ -79,6 +79,6 @@ export const fetchProjectsService = async (): Promise<ApiResponse<ProjectCardPro
     return response.data;
   } catch (error) {
     console.error("Failed to fetch projects:", error);
-    return null;
+    throw error;
   }
 };

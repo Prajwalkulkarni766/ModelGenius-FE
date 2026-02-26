@@ -18,8 +18,8 @@ export const getDatasetService = async (
 
     return response.data;
   } catch (error) {
-    console.error("Failed to upload dataset:", error);
-    return null;
+    console.error("Failed to fetch dataset:", error);
+    throw error;
   }
 };
 
@@ -52,7 +52,7 @@ export const uploadDatasetService = async (
     return response.data;
   } catch (error) {
     console.error("Failed to upload dataset:", error);
-    return null;
+    throw error;
   }
 };
 
@@ -72,7 +72,7 @@ export const deleteDatasetService = async (
     return response.data;
   } catch (error) {
     console.error("Failed to delete dataset:", error);
-    return null;
+    throw error;
   }
 };
 
@@ -92,7 +92,7 @@ export const getDatasetColumnsService = async (
     return response.data;
   } catch (error) {
     console.error("Failed to fetch dataset columns:", error);
-    return null;
+    throw error;
   }
 };
 
@@ -112,6 +112,6 @@ export const getDatasetPreviewService = async (
     return response.data;
   } catch (error) {
     console.error("Failed to fetch dataset preview:", error);
-    return null;
+    throw error;
   }
 };

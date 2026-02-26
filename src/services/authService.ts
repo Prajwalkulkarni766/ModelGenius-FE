@@ -22,7 +22,7 @@ export const signupService = async (
     return true;
   } catch (error) {
     console.error("Signup failed:", error);
-    return false;
+    throw error;
   }
 };
 
@@ -61,10 +61,7 @@ export const loginService = async (
     };
   } catch (error) {
     console.error("Login failed:", error);
-    return {
-      requestStatus: false,
-      responseData: {} as LoginApiResponse,
-    };
+    throw error;
   }
 };
 

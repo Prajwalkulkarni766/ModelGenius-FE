@@ -26,6 +26,7 @@ const ProjectInfo = () => {
             }
         } catch (error) {
             console.error(error);
+            setProjectFetchingError(String(error));
         }
     };
 

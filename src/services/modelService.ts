@@ -27,7 +27,7 @@ export const setMachineLearningModelService = async (
     };
   } catch (error) {
     console.error("Failed to set machine learning model:", error);
-    return { requestStatus: false };
+    throw error;
   }
 };
 
@@ -48,7 +48,7 @@ export const deleteModelService = async (
     };
   } catch (error) {
     console.error("Failed to delete model:", error);
-    return { requestStatus: false };
+    throw error;
   }
 };
 
@@ -71,7 +71,7 @@ export const createNewModel = async (
     return response.data;
   } catch (error) {
     console.error("Failed to create model:", error);
-    return null;
+    throw error;
   }
 };
 
@@ -107,7 +107,7 @@ export const settingDataCleaningMethodService = async (
     return response.data;
   } catch (error) {
     console.error("Failed to save preprocessing settings:", error);
-    return null;
+    throw error;
   }
 };
 
@@ -137,7 +137,7 @@ export const setModelDatasetsService = async (
     return response.data;
   } catch (error) {
     console.error("Failed to set model datasets:", error);
-    return null;
+    throw error;
   }
 };
 
@@ -164,7 +164,7 @@ export const setTargetColumnService = async (
     return response.data;
   } catch (error) {
     console.error("Failed to set target column:", error);
-    return null;
+    throw error;
   }
 };
 
@@ -181,7 +181,7 @@ export const trainModelService = async (
     return response.data;
   } catch (error) {
     console.error("Failed to train model:", error);
-    return null;
+    throw error;
   }
 };
 
@@ -205,7 +205,7 @@ export const trainDryRunService = async (
     return response.data;
   } catch (error) {
     console.error("Failed to dry run train model:", error);
-    return null;
+    throw error;
   }
 };
 
@@ -221,7 +221,7 @@ export const getModelService = async (
     });
   } catch (error) {
     console.error("Failed to get model:", error);
-    return null;
+    throw error;
   }
 }
 
@@ -239,7 +239,7 @@ export const updateModelService = async (
     return response.data;
   } catch (error) {
     console.error("Failed to update model:", error);
-    return null;
+    throw error;
   }
 };
 
@@ -277,7 +277,7 @@ export const exportModelService = async (
     return true;
   } catch (error) {
     console.error("Failed to export model:", error);
-    return false;
+    throw error;
   }
 };
 
@@ -315,7 +315,7 @@ export const exportModelCodeService = async (
     return true;
   } catch (error) {
     console.error("Failed to export model code:", error);
-    return false;
+    throw error;
   }
 };
 
@@ -333,7 +333,7 @@ export const getModelCodeService = async (
     });
   } catch (error) {
     console.error("Failed to get model code:", error);
-    return null;
+    throw error;
   }
 };
 
@@ -351,6 +351,6 @@ export const aiChatService = async (
     return response.data?.data;
   } catch (error) {
     console.error("AI chat failed:", error);
-    return null;
+    throw error;
   }
 };
