@@ -72,3 +72,17 @@ export const logoutService = async (): Promise<void> => {
     console.error("Logout API call failed:", error);
   }
 };
+
+export const resetPasswordService = async (
+  newPassword: string
+): Promise<boolean> => {
+  try {
+    const response = await apiClient.post(`${API_PATH}/reset-password`, {
+      newPassword,
+    });
+    return response.status === 200;
+  } catch (error) {
+    console.error("Password reset failed:", error);
+    throw error;
+  }
+};
