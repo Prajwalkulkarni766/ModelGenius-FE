@@ -32,13 +32,11 @@ const Sidebar = () => {
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logoutService();
+  const handleLogout = async () => {
+    await logoutService();
     userStore.getState().clearUser();
     modelStore.getState().clearModel();
     projectStore.getState().clearProject();
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
     navigate("/");
   };
 

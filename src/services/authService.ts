@@ -70,6 +70,9 @@ export const logoutService = async (): Promise<void> => {
     await apiClient.post(`${API_PATH}/logout`);
   } catch (error) {
     console.error("Logout API call failed:", error);
+  } finally {
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
   }
 };
 
