@@ -29,7 +29,7 @@ const bottomMenus: MenuItem[] = [
 
 const Sidebar = () => {
   const location = useLocation();
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const user = userStore((state) => state.user);
   const navigate = useNavigate();
 
   const handleLogout = async () => {
