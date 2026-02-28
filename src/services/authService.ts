@@ -15,10 +15,6 @@ export const signupService = async (
       password,
     });
 
-    if (response.data?.token) {
-      localStorage.setItem("token", response.data.token);
-    }
-
     return true;
   } catch (error) {
     console.error("Signup failed:", error);
