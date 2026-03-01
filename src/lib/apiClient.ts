@@ -22,6 +22,14 @@ apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     const config = error.config;
+
+    if (error.response?.status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      window.location.href = "/";
+      return Promise.reject(error);
+    }
+
     config.__retryCount = config.__retryCount || 0;
 
     const isRetryable =
