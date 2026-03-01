@@ -26,11 +26,15 @@ const LoginForm = () => {
 
     const onSubmit: SubmitHandler<LoginUser> = async (data) => {
         await execute(async () => {
-            const { requestStatus, responseData } = await loginService(data.email, data.password);
-            if (requestStatus) {
-                setUser(responseData.data.user)
-                navigate("/home");
-            } else {
+            try {
+                const { requestStatus, responseData } = await loginService(data.email, data.password);
+                if (requestStatus) {
+                    setUser(responseData.data.user)
+                    navigate("/home");
+                } else {
+                    showSnackbar("Login failed. Please check your credentials.", "error");
+                }
+            } catch {
                 showSnackbar("Login failed. Please check your credentials.", "error");
             }
         });
