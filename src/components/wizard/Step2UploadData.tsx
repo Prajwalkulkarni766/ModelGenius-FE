@@ -5,7 +5,6 @@ import { ModelStepProps } from "../../types/Model";
 import { Dataset } from "../../types/Dataset";
 import { getDatasetService, getDatasetColumnsService } from "../../services/datasetService";
 import { setModelDatasetsService, setTargetColumnService } from "../../services/modelService";
-import Layout from "../../layouts/Layout";
 import { useSnackbar } from "../../hooks/useSnackbar";
 import { useAsyncAction } from "../../hooks/useAsyncAction";
 
@@ -85,11 +84,7 @@ const Step2UploadData = ({ projectId, goToNextStep, modelId }: ModelStepProps) =
     };
 
     if (!modelId) {
-        return (
-            <Layout>
-                <Typography color="error">Invalid model ID</Typography>
-            </Layout>
-        );
+        return <Typography color="error">Invalid model ID</Typography>;
     }
 
     return (
