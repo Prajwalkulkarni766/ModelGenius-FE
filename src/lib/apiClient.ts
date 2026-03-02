@@ -1,4 +1,5 @@
 import axios from "axios";
+import { clearAuthAndRedirect } from "./tokenUtils";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 const REQUEST_TIMEOUT_MS = 15_000;
@@ -24,9 +25,7 @@ apiClient.interceptors.response.use(
     const config = error.config;
 
     if (error.response?.status === 401) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      window.location.href = "/";
+      clearAuthAndRedirect();
       return Promise.reject(error);
     }
 
