@@ -4,10 +4,12 @@ import { getProfileService, updateProfileService } from "../../services/settingS
 import { useState, useEffect } from 'react';
 import { UpdateProfileUser } from "../../types/User";
 import { useSnackbar } from "../../hooks/useSnackbar";
+import { useAsyncAction } from '../../hooks/useAsyncAction';
 
 const UpdateProfileForm = () => {
 
   const { showSnackbar } = useSnackbar();
+  const { execute, loading: isLoading } = useAsyncAction();
 
   // Initialize react-hook-form
   const { control, handleSubmit, formState: { errors }, reset } = useForm<UpdateProfileUser>({
@@ -19,19 +21,20 @@ const UpdateProfileForm = () => {
 
   // Handle form submission
   const onSubmit: SubmitHandler<UpdateProfileUser> = async (data) => {
-    try {
-      // Assuming signupService handles the API call for login.
-      const updateProfileSuccess = await updateProfileService(data.username, data.email);
+    await execute(async () => {
+      try {
+        const updateProfileSuccess = await updateProfileService(data.username, data.email);
 
-      if (updateProfileSuccess) {
-        showSnackbar("Profile updated successfully!", "success");
-      } else {
-        showSnackbar("Failed to update profile. Please try again.", "error");
+        if (updateProfileSuccess) {
+          showSnackbar("Profile updated successfully!", "success");
+        } else {
+          showSnackbar("Failed to update profile. Please try again.", "error");
+        }
+      } catch (error) {
+        showSnackbar("An error occurred. Please try again later.", "error");
+        console.error(error);
       }
-    } catch (error) {
-      showSnackbar("An error occurred. Please try again later.", "error");
-      console.error(error);
-    }
+    });
   };
 
   useEffect(() => {
@@ -114,8 +117,8 @@ const UpdateProfileForm = () => {
         )}
       />
 
-      <Button type="submit" variant="contained" color="primary" size="large" fullWidth>
-        Update Profile
+      <Button type="submit" variant="contained" color="primary" size="large" fullWidth disabled={isLoading}>
+        {isLoading ? 'Updating...' : 'Update Profile'}
       </Button>
     </Box>
   );
