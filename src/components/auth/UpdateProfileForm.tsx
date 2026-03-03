@@ -39,16 +39,21 @@ const UpdateProfileForm = () => {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const data = await getProfileService();
-      if (data) {
-        reset({
-          username: data.data.username,
-          email: data.data.email
-        });
+      try {
+        const data = await getProfileService();
+        if (data) {
+          reset({
+            username: data.data.username,
+            email: data.data.email
+          });
+        }
+      } catch (error) {
+        showSnackbar("Failed to load profile. Please try again.", "error");
+        console.error(error);
       }
     };
     fetchProfile();
-  }, [])
+  }, []);
 
   return (
     <Box

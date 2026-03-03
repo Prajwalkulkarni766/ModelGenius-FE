@@ -12,7 +12,6 @@ const Project = lazy(() => import("../pages/Project"));
 const Dataset = lazy(() => import('../pages/Dataset'));
 const ProjectInfo = lazy(() => import("../pages/ProjectInfo"));
 const NewModelWizard = lazy(() => import("../pages/NewModelWizard"));
-const ModelInfo = lazy(() => import('../pages/ModelInfo'));
 const ForgotPassword = lazy(() => import('../pages/ForgotPassword'));
 const ModelDetails = lazy(() => import("../pages/ModelDetailsPage"));
 const ComingSoon = lazy(() => import("../pages/ComingSoon"));
@@ -42,12 +41,9 @@ const AppRouter = () => {
           <Route path='/projects/:id' element={<ProjectInfo />} />
 
           <Route path='/projects/:projectId/models/new' element={<NewModelWizard />} />
-          <Route path='/projects/:projectId/models/:modelId' element={<ModelInfo />} />
+          <Route path='/projects/:projectId/models/:modelId' element={<ModelDetails />} />
 
           <Route path='/projects/:projectId/dataset/new' element={<Dataset />} />
-
-
-          <Route path='/projects/:projectId/model-details/:modelId' element={<ModelDetails />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />
