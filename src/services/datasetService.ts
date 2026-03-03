@@ -9,7 +9,7 @@ export const getDatasetService = async (
 ): Promise<ApiResponse<Dataset[]> | null> => {
   try {
     if (!projectId) {
-      throw new Error("Missing modelId, projectId, or file");
+      throw new Error("Missing projectId");
     }
 
     const response = await apiClient.get<ApiResponse<Dataset[]>>(
@@ -29,7 +29,7 @@ export const uploadDatasetService = async (
 ): Promise<ApiResponse<Dataset> | null> => {
   try {
     if (!projectId || !files) {
-      throw new Error("Missing modelId, projectId, or file");
+      throw new Error("Missing projectId or files");
     }
 
     const formData = new FormData();
