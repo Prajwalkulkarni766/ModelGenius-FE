@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Typography, Box, Button, CircularProgress } from "@mui/material";
+import { useState } from "react";
+import { Typography, Box, Button, CircularProgress, Alert } from "@mui/material";
 import MetricsCard from "./MetricsCard";
 import { ModelStepProps } from "../../types/Model";
 import { trainModelService } from "../../services/modelService";
@@ -16,51 +16,73 @@ type Metrics = {
     r2_score?: number;
 };
 
+type TrainStatus = "idle" | "loading" | "done" | "error";
+
 const Step5EvaluationMetrics = ({ projectId, modelId, goToNextStep }: ModelStepProps) => {
     const [metrics, setMetrics] = useState<Metrics | null>(null);
-    const [loading, setLoading] = useState<boolean>(true);
+    const [status, setStatus] = useState<TrainStatus>("idle");
     const { showSnackbar } = useSnackbar();
 
-    useEffect(() => {
-        const trainModel = async () => {
-            if (!projectId || !modelId) {
-                showSnackbar("Invalid project or model ID", "error");
-                setLoading(false);
-                return;
+    const handleTrain = async () => {
+        if (!projectId || !modelId) {
+            showSnackbar("Invalid project or model ID", "error");
+            return;
+        }
+        setStatus("loading");
+        try {
+            const response = await trainModelService(projectId, modelId);
+            if (response && response.data) {
+                setMetrics(response.data);
+                setStatus("done");
+                showSnackbar("Model trained successfully!", "success");
+            } else {
+                setStatus("error");
+                showSnackbar("Failed to train the model.", "error");
             }
-
-            try {
-                const response = await trainModelService(projectId, modelId);
-
-                if (response && response.data) {
-                    setMetrics(response.data);
-                    showSnackbar("Model trained successfully!", "success");
-                } else {
-                    showSnackbar("Failed to train the model.", "error");
-                }
-            } catch (err) {
-                console.error(err);
-                showSnackbar("Error occurred during model training.", "error");
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        trainModel();
-    }, [projectId, modelId, showSnackbar]);
+        } catch (err) {
+            console.error(err);
+            setStatus("error");
+            showSnackbar("Error occurred during model training.", "error");
+        }
+    };
 
     return (
         <Box mt={5} sx={{ display: "flex", flexDirection: "column" }} gap={2}>
             <Typography variant="h5">Evaluation Metrics Overview</Typography>
 
-            {loading && (
+            {status === "idle" && (
+                <Box display="flex" flexDirection="column" alignItems="center" gap={2} mt={4}>
+                    <Typography color="textSecondary">
+                        Ready to train your model. Click the button below to begin.
+                    </Typography>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        size="large"
+                        onClick={handleTrain}
+                    >
+                        Train Model
+                    </Button>
+                </Box>
+            )}
+
+            {status === "loading" && (
                 <Box display="flex" justifyContent="center" mt={4}>
                     <CircularProgress />
                     <Typography ml={2}>Training model and computing metrics...</Typography>
                 </Box>
             )}
 
-            {!loading && metrics && (
+            {status === "error" && (
+                <Box display="flex" flexDirection="column" alignItems="center" gap={2} mt={4}>
+                    <Alert severity="error">Training failed. Please try again.</Alert>
+                    <Button variant="outlined" color="error" onClick={handleTrain}>
+                        Retry
+                    </Button>
+                </Box>
+            )}
+
+            {status === "done" && metrics && (
                 <Box mt={2} sx={{ display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
                     {metrics.accuracy ? (
                         <>
@@ -79,7 +101,7 @@ const Step5EvaluationMetrics = ({ projectId, modelId, goToNextStep }: ModelStepP
                 </Box>
             )}
 
-            {!loading && metrics && (
+            {status === "done" && metrics && (
                 <>
                     <Typography color="textSecondary" mb={5} mt={3} textAlign="center">
                         If you are not satisfied with the evaluation metrics, you can take help from our AI agent.
