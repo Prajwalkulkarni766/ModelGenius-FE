@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Typography, TextField, IconButton, Box } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Check';
@@ -22,6 +22,12 @@ const EditableText: React.FC<EditableTextProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(value);
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!isEditing) {
+      setEditValue(value);
+    }
+  }, [value, isEditing]);
 
   const handleStartEdit = () => {
     setEditValue(value);
