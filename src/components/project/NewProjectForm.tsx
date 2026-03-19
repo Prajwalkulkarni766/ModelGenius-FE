@@ -1,19 +1,15 @@
-import { Typography, Box, TextField, Button } from "@mui/material";
+import { Box, TextField, Button } from "@mui/material";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { newProjectService } from "../../services/projectService";
-import { useState } from "react";
 import { NewProject } from "../../types/Project";
-import ImageDropZone from "./ImageDropZone";
 import { useSnackbar } from "../../hooks/useSnackbar";
 import { useAsyncAction } from "../../hooks/useAsyncAction";
 
 const NewProjectForm = () => {
 
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { showSnackbar } = useSnackbar();
   const { execute, loading } = useAsyncAction();
 
-  // Initialize react-hook-form
   const { control, handleSubmit, formState: { errors }, reset } = useForm<NewProject>({
     defaultValues: {
       projectTitle: '',
@@ -21,24 +17,16 @@ const NewProjectForm = () => {
     }
   });
 
-  // Handle form submission
   const onSubmit: SubmitHandler<NewProject> = async (data) => {
     await execute(async () => {
-      const formData = new FormData();
-      formData.append('projectTitle', data.projectTitle);
-      formData.append('projectDescription', data.projectDescription);
-
-      if (selectedFile) {
-        formData.append('projectFile', selectedFile);
-      }
-
-      // Assuming signupService handles the API call for project creation.
-      const newProjectSuccess = await newProjectService(formData);
+      const newProjectSuccess = await newProjectService({
+        projectTitle: data.projectTitle,
+        projectDescription: data.projectDescription
+      });
 
       if (newProjectSuccess) {
         showSnackbar("Project created successfully!", "success");
         reset();
-        setSelectedFile(null);
       } else {
         showSnackbar("Failed to create project. Please try again.", "error");
       }
@@ -109,8 +97,6 @@ const NewProjectForm = () => {
             />
           )}
         />
-
-        <ImageDropZone file={selectedFile} onFileSelect={setSelectedFile} />
 
         <Button sx={{ mt: 2, alignSelf: 'flex-start' }} type="submit" variant="contained" color="primary" size="large" disabled={loading}>
           {loading ? 'Creating...' : 'Create'}

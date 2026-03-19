@@ -25,7 +25,6 @@ export type ProjectCardProps = {
   projectTitle: string;
   projectDescription: string;
   userId: string;
-  projectFile?: string;
   createdAt?: string;
   updatedAt?: string;
 };

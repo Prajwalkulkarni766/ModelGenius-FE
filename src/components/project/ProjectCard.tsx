@@ -3,7 +3,6 @@ import {
     Button,
     Card,
     CardContent,
-    CardMedia,
     Typography,
 } from '@mui/material';
 import { ProjectCardProps } from '../../types/Project';
@@ -24,8 +23,6 @@ export default function ProjectCard({
 }: ProjectCardComponentProps) {
     const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
     const deleteGuardRef = useRef(false);
-
-    const imageBaseUrl = import.meta.env.VITE_IMAGE_BASE_URL;
 
     const handleDeleteClick = (id: string) => {
         setDeleteTargetId(id);
@@ -82,15 +79,6 @@ export default function ProjectCard({
                             </Button>
                         </Box>
                     </Box>
-
-                    {project.projectFile && (
-                        <CardMedia
-                            component="img"
-                            sx={{ width: 151, marginLeft: 'auto' }}
-                            image={`${imageBaseUrl}${project.projectFile}`}
-                            alt={`${project.projectTitle} image`}
-                        />
-                    )}
                 </Card>
             ))}
 

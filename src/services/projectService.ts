@@ -1,15 +1,15 @@
 import apiClient from "../lib/apiClient";
 import { ProjectDetailsResponse } from "../types/Project";
-import { ProjectCardProps } from "../types/Project";
+import { ProjectCardProps, NewProject } from "../types/Project";
 import { ApiResponse } from "../types/ApiResponse";
 
 const API_PATH = "/api/v1/projects";
 
 export const newProjectService = async (
-  formData: FormData
+  projectData: NewProject
 ): Promise<boolean> => {
   try {
-    const response = await apiClient.post(`${API_PATH}`, formData);
+    const response = await apiClient.post(`${API_PATH}`, projectData);
 
     return response.status === 200 || response.status === 201;
   } catch (error) {
