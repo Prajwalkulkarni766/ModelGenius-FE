@@ -57,7 +57,7 @@ export default function ModelList({ projectId, models: initialModels }: ModelLis
                             <ListItem
                                 secondaryAction={
                                     <>
-                                        <Link to={`/projects/${projectId}/model-details/${model._id}`}>
+                                        <Link to={`/projects/${projectId}/models/${model._id}`}>
                                             <Button color='primary'>Edit</Button>
                                         </Link>
                                         <Button

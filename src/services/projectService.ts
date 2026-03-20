@@ -74,7 +74,7 @@ export const updateProjectService = async (
 
 export const fetchProjectsService = async (): Promise<ApiResponse<ProjectCardProps[]> | null> => {
   try {
-    const response = await apiClient.get<ApiResponse<ProjectCardProps[]>>(`${API_PATH}/projects`);
+    const response = await apiClient.get<ApiResponse<ProjectCardProps[]>>(`${API_PATH}`);
 
     return response.data;
   } catch (error) {

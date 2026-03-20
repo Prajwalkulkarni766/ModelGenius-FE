@@ -3,8 +3,7 @@ import Layout from '../layouts/Layout';
 import ProjectCard from '../components/project/ProjectCard';
 import { ProjectCardProps } from '../types/Project';
 import { useEffect, useState } from 'react';
-import { fetchProjectsService } from '../services/projectService';
-import { deleteProjectService } from "../services/projectService";
+import { fetchProjectsService, deleteProjectService } from '../services/projectService';
 import { useSnackbar } from '../hooks/useSnackbar';
 import { useAsyncAction } from '../hooks/useAsyncAction';
 
