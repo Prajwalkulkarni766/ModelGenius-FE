@@ -163,12 +163,17 @@ const Dataset: React.FC<DatasetProps> = ({ projectId, model, onModelUpdate }) =>
                         <TableCell
                           key={columnKeys[virtualColumn.index]}
                           component="div"
+                          title={columnKeys[virtualColumn.index]}
                           sx={{
                             fontWeight: 'bold',
                             width: 150,
                             position: 'absolute',
                             left: virtualColumn.start,
                             borderBottom: 0,
+                            overflow: 'hidden',
+                            whiteSpace: 'nowrap',
+                            textOverflow: 'ellipsis',
+                            display: 'block',
                           }}
                         >
                           {columnKeys[virtualColumn.index]}
@@ -183,12 +188,17 @@ const Dataset: React.FC<DatasetProps> = ({ projectId, model, onModelUpdate }) =>
                           <TableCell
                             key={virtualColumn.index}
                             component="div"
+                            title={String(Object.values(row)[virtualColumn.index])}
                             sx={{
                               width: 150,
                               position: 'absolute',
                               left: virtualColumn.start,
                               height: 40,
                               py: 0,
+                              overflow: 'hidden',
+                              whiteSpace: 'nowrap',
+                              textOverflow: 'ellipsis',
+                              display: 'block',
                             }}
                           >
                             {String(Object.values(row)[virtualColumn.index])}

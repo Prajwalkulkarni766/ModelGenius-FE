@@ -51,7 +51,7 @@ const NewProjectForm = () => {
           rules={{
             required: "Project title is required",
             pattern: {
-              value: /^[a-zA-Z0-9]+$/,
+              value: /^[a-zA-Z0-9\s]+$/,
               message: "Invalid Project title"
             }
           }}
@@ -77,7 +77,7 @@ const NewProjectForm = () => {
           rules={{
             required: "Project description is required",
             pattern: {
-              value: /^[a-zA-Z0-9]+$/,
+              value: /^[a-zA-Z0-9\s]+$/,
               message: "Invalid Project description"
             }
           }}
