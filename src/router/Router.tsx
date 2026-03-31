@@ -14,8 +14,8 @@ const ProjectInfo = lazy(() => import("../pages/ProjectInfo"));
 const NewModelWizard = lazy(() => import("../pages/NewModelWizard"));
 const ForgotPassword = lazy(() => import('../pages/ForgotPassword'));
 const ModelDetails = lazy(() => import("../pages/ModelDetailsPage"));
-const ComingSoon = lazy(() => import("../pages/ComingSoon"));
 const NotFound = lazy(() => import("../pages/NotFound"));
+const AIAgentList = lazy(() => import("../pages/AIAgentList"));
 import ProtectedRoute from "../components/ProtectedRoute";
 
 const AppRouter = () => {
@@ -27,27 +27,27 @@ const AppRouter = () => {
         </Box>
       }>
         <Routes>
-        <Route path='/' element={<Login />} />
-        <Route path='/signup' element={<Signup />} />
-        <Route path='/forgot-password' element={<ForgotPassword />} />
+          <Route path='/' element={<Login />} />
+          <Route path='/signup' element={<Signup />} />
+          <Route path='/forgot-password' element={<ForgotPassword />} />
 
-        <Route element={<ProtectedRoute />}>
-          <Route path='/home' element={<Home />} />
-          <Route path='/ai-agent' element={<ComingSoon />} />
-          <Route path='/setting' element={<Setting />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path='/home' element={<Home />} />
+            <Route path='/ai-agent' element={<AIAgentList />} />
+            <Route path='/setting' element={<Setting />} />
 
-          <Route path='/projects' element={<Project />} />
-          <Route path='/projects/new' element={<NewProject />} />
-          <Route path='/projects/:id' element={<ProjectInfo />} />
+            <Route path='/projects' element={<Project />} />
+            <Route path='/projects/new' element={<NewProject />} />
+            <Route path='/projects/:id' element={<ProjectInfo />} />
 
-          <Route path='/projects/:projectId/models/new' element={<NewModelWizard />} />
-          <Route path='/projects/:projectId/models/:modelId' element={<ModelDetails />} />
+            <Route path='/projects/:projectId/models/new' element={<NewModelWizard />} />
+            <Route path='/projects/:projectId/models/:modelId' element={<ModelDetails />} />
 
-          <Route path='/projects/:projectId/dataset/new' element={<Dataset />} />
-        </Route>
+            <Route path='/projects/:projectId/dataset/new' element={<Dataset />} />
+          </Route>
 
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+          <Route path="*" element={<NotFound />} />
+        </Routes>
       </Suspense>
     </HashRouter>
   );

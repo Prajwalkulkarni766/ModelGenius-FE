@@ -337,16 +337,37 @@ export const getModelCodeService = async (
   }
 };
 
+export interface AiAgent {
+  id: string;
+  name: string;
+  provider: string;
+  description: string;
+  free: boolean;
+}
+
+export const getAiAgentsService = async (): Promise<AiAgent[]> => {
+  try {
+    const response = await apiClient.get<ApiResponse<AiAgent[]>>(
+      `${API_PATH}/ai-agents`
+    );
+    return response.data?.data ?? [];
+  } catch (error) {
+    console.error("Failed to get AI agents:", error);
+    throw error;
+  }
+};
+
 export const aiChatService = async (
   projectId: string,
   modelId: string,
   message: string,
-  chatHistory: { role: string; content: string }[]
+  chatHistory: { role: string; content: string }[],
+  agentId?: string
 ): Promise<{ reply: string } | null> => {
   try {
     const response = await apiClient.post(
       `${API_PATH}/${projectId}/models/${modelId}/ai-chat`,
-      { message, chatHistory }
+      { message, chatHistory, agentId }
     );
     return response.data?.data;
   } catch (error) {
